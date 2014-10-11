@@ -3,25 +3,26 @@
 #include <stdlib.h>
 #include <err.h>
 #include <time.h>
+#include "SDL/SDL.h"
+
 #include "utils/neuralNetwork/neuralNetwork.h"
 #include "utils/types/arrays.h"
+#include "utils/image/image.h"
 
 
-void setup()
+int setup()
 {
 	srand(time(NULL));
+
+	return 1;
 }
 
-int main()
+int startNeuralNetwork()
 {
-	printf("MediOCR started! \n");
-
-	setup();
-
 	struct NeuralNetwork myNeuralNetwork = neuralNetwork_main(2, 2, 1);
 
-    unsignedArray2D input  = new_unsignedArray2D(4, 2);
-    unsignedArray2D output = new_unsignedArray2D(4, 1);
+	unsignedArray2D input  = new_unsignedArray2D(4, 2);
+	unsignedArray2D output = new_unsignedArray2D(4, 1);
 
 	input.elements[0].elements[0] = 0;
 	input.elements[0].elements[1] = 0;
@@ -37,9 +38,37 @@ int main()
 	output.elements[2].elements[0] = 1;
 	output.elements[3].elements[0] = 0;
 
-	NeuralNetwork_train(myNeuralNetwork, input, output, 100000, 0.5, 0.1);
+	NeuralNetwork_train(myNeuralNetwork, input, output, 1000, 0.5, 0);
 
 	NeuralNetwork_test(myNeuralNetwork, input);
 
-	return 0;
+	return 1;
+}
+
+int startImageProcessing()
+{
+	SDL_Surface *surface = image_load("data/letters/a.bmp");
+	image_renderConsole(surface);
+
+	return 1;
+}
+
+int main()
+{
+	printf("MediOCR started! \n");
+
+	if(!setup())
+	{
+		err(1, "Error");
+	}
+
+	if(!startImageProcessing())
+	{
+		err(1, "Error");
+	}
+
+	printf("MediOCR ended! \n");
+
+
+	return EXIT_SUCCESS;
 }

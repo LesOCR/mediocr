@@ -16,13 +16,13 @@ CFLAGS= -Wall -Werror -std=c99 -O3
 LDFLAGS=
 
 # Linker libs
-LDLIBS= -lm
+LDLIBS= -lm `sdl-config --cflags --libs`
 
 # all target just call the production of main
 all: main clean
 
 # main target using implicit rules, just express dependencies
-main: main.o utils/neuralNetwork/neuralNetwork.o utils/helpers/maths.o utils/types/arrays.o
+main: main.o utils/neuralNetwork/neuralNetwork.o utils/helpers/maths.o utils/helpers/file.o utils/types/arrays.o utils/image/image.o
 
 .PHONY: clean
 
