@@ -36,8 +36,8 @@ SDL_Color image_getPixelColor(SDL_Surface *surface, unsigned x,
 Uint32 image_getPixelUint32(SDL_Surface *surface, unsigned x,
 	unsigned y)
 {
-    Uint8 *p = (Uint8 *)surface->pixels + y * surface->pitch
-             + x * surface->format->BytesPerPixel; //
+    Uint8 *p = (Uint8 *)surface->pixels + x * surface->pitch
+             + y * surface->format->BytesPerPixel; //
 
     switch(surface->format->BytesPerPixel) { //
     case 1:
@@ -82,7 +82,7 @@ void image_renderConsole(SDL_Surface *surface)
 	{
 		for(unsigned y = 0; y < 16; y++)
 		{
-			SDL_Color color = image_getPixelColor(surface, y, x);
+			SDL_Color color = image_getPixelColor(surface, x, y);
 			// printf("Pixel data [%d:%d]: R:%d, G:%d, B: %d\n", x, y,
 			// 	color.b, color.g, color.b);
 			if(image_getGreyscaleRatio(color) > 0.5)
