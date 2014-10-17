@@ -2,7 +2,7 @@
 #include <stdio.h>
 #include <err.h>
 #include <assert.h>
-#include "SDL/SDL.h"
+#include <SDL/SDL.h>
 
 #include "image.h"
 #include "charDetection.h"
@@ -82,6 +82,8 @@ unsigned image_getPixelBool(SDL_Surface *surface, unsigned x,
 {
 	return image_getGreyscaleRatio(image_getPixelColor(surface, x, y)) < 0.5;
 }
+
+
 
 void image_renderConsoleFromTo(SDL_Surface *surface, unsigned x1, unsigned y1,
  	unsigned x2, unsigned y2)

@@ -49,9 +49,9 @@ int startNeuralNetwork()
 
 int startImageProcessing()
 {
-	SDL_Surface *surface = image_load("data/text/abcdefgh.bmp");
+	SDL_Surface *surface = image_load("data/letters/alphabet.bmp");
 
-	image_renderConsole(surface);
+	//image_renderConsole(surface);
 
 	ImageLineArray imageLine = charDetection_go(surface);
 
