@@ -1,6 +1,4 @@
 
-#include "../image/charDetection.h"
-
 #ifndef UTILS_TYPES_STRUCTARRAYS_
 #define UTILS_TYPES_STRUCTARRAYS_
 

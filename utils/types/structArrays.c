@@ -1,4 +1,6 @@
 
+#include <err.h>
+
 #include "../image/charDetection.h"
 #include "structArrays.h"
 
@@ -39,17 +41,19 @@ ImageCharArray new_ImageCharArray(unsigned i)
 void add_ImageLineArray(ImageLineArray *array, unsigned i,
 	struct ImageLine imageLine)
 {
-	if(i >= array->sizeX)
+	if(i > array->sizeX)
 	{
 		// We need to realloc some memory
-		array = realloc(array, i * 2 * sizeof(struct ImageLine));
-		array->sizeX = i * 2;
-
-		for(unsigned k = i; k < i * 2; k++)
+		i *= 2;
+		printf("ImageLineArray new size: %d\n", i);
+		array->elements =
+			realloc(array->elements, i * sizeof(struct ImageLine));
+		if(array->elements == NULL)
 		{
-			struct ImageLine el;
-			array->elements[k] = el;
+			errx(1, "ImageLineArray: Could not realloc\n");
 		}
+
+		array->sizeX = i;
 	}
 
 	array->elements[i] = imageLine;
@@ -58,17 +62,19 @@ void add_ImageLineArray(ImageLineArray *array, unsigned i,
 void add_ImageCharArray(ImageCharArray *array, unsigned i,
 	struct ImageChar imageChar)
 {
-	if(i >= array->sizeX)
+	if(i > array->sizeX)
 	{
 		// We need to realloc some memory
-		array = realloc(array, i * 2 * sizeof(struct ImageChar));
-		array->sizeX = i * 2;
-
-		for(unsigned k = i; k < i * 2; k++)
+		i *= 2;
+		printf("ImageCharArray new size: %d\n", i);
+		array->elements =
+			realloc(array->elements, i * sizeof(struct ImageChar));
+		if(array->elements == NULL)
 		{
-			struct ImageChar el;
-			array->elements[k] = el;
+			errx(1, "ImageCharArray: Could not realloc\n");
 		}
+
+		array->sizeX = i;
 	}
 
 	array->elements[i] = imageChar;

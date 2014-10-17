@@ -2,6 +2,7 @@
 #include <SDL/SDL.h>
 
 #include "image.h"
+#include "../types/structArrays.h"
 #include "charDetection.h"
 
 unsigned charDetection_line(SDL_Surface *surface, struct ImageLine *imageLine,
@@ -70,7 +71,7 @@ unsigned charDetection_char(SDL_Surface *surface, struct ImageLine imageLine,
 	int bottomX, bottomY;
 	bottomX = bottomY = -1;
 	unsigned detectedChar = 0;
-	for(int x = imageLine.startX + startX; x < (int)imageLine.endX; x++)
+	for(int x = startX; x < (int)imageLine.endX; x++)
 	{
 		unsigned emptyColumn = 1;
 		for(int y = imageLine.startY; y < (int)imageLine.endY; y++)
@@ -120,7 +121,33 @@ unsigned charDetection_char(SDL_Surface *surface, struct ImageLine imageLine,
 	return 1;
 }
 
-struct ImageLine *charDetection_go(SDL_Surface *surface)
+ImageLineArray charDetection_go(SDL_Surface *surface)
 {
-	
+	ImageLineArray lineArray = new_ImageLineArray(4);
+
+	struct ImageLine imageLine;
+	unsigned startY = 0;
+	unsigned x = 0;
+
+	while(charDetection_line(surface, &imageLine, startY) == 1)
+	{
+		ImageCharArray charArray = new_ImageCharArray(4);
+
+		struct ImageChar imageChar;
+		unsigned startX = 0;
+		unsigned y = 0;
+
+		while(charDetection_char(surface, imageLine, &imageChar, startX) == 1)
+		{
+			startX = imageChar.endX;
+			add_ImageCharArray(&charArray, y++, imageChar);
+		}
+
+		imageLine.chars = charArray;
+
+		startY = imageLine.endY;
+		add_ImageLineArray(&lineArray, x++, imageLine);
+	}
+
+	return lineArray;
 }

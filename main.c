@@ -9,6 +9,7 @@
 #include "utils/types/arrays.h"
 #include "utils/image/image.h"
 #include "utils/image/charDetection.h"
+#include "utils/types/structArrays.h"
 
 
 int setup()
@@ -49,13 +50,19 @@ int startNeuralNetwork()
 int startImageProcessing()
 {
 	SDL_Surface *surface = image_load("data/text/abcdefgh.bmp");
-	struct ImageLine imageLine;
-	charDetection_line(surface, &imageLine, 0);
+
 	image_renderConsole(surface);
 
-	struct ImageChar imageChar;
-	charDetection_char(surface, imageLine, &imageChar, 0);
-	image_renderConsoleFromChar(surface, imageChar);
+	ImageLineArray imageLine = charDetection_go(surface);
+
+	for(unsigned x = 0; x < imageLine.sizeX; x++)
+	{
+		for(unsigned y = 0; y < imageLine.elements[x].chars.sizeX; y++)
+		{
+			image_renderConsoleFromChar(
+				surface, imageLine.elements[x].chars.elements[y]);
+		}
+	}
 
 	return 1;
 }
