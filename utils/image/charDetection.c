@@ -119,3 +119,8 @@ unsigned charDetection_char(SDL_Surface *surface, struct ImageLine imageLine,
 
 	return 1;
 }
+
+struct ImageLine *charDetection_go(SDL_Surface *surface)
+{
+	
+}

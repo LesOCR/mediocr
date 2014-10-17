@@ -1,7 +1,7 @@
 
 #include <stdio.h>
 #include <err.h>
-#include "stdlib.h"
+#include <stdlib.h>
 #include "arrays.h"
 
 doubleArray new_doubleArray(unsigned i)
