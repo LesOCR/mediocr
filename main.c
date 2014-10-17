@@ -8,6 +8,7 @@
 #include "utils/neuralNetwork/neuralNetwork.h"
 #include "utils/types/arrays.h"
 #include "utils/image/image.h"
+#include "utils/image/charDetection.h"
 
 
 int setup()
@@ -47,8 +48,10 @@ int startNeuralNetwork()
 
 int startImageProcessing()
 {
-	SDL_Surface *surface = image_load("data/letters/a.bmp");
-	image_renderConsole(surface);
+	SDL_Surface *surface = image_load("data/text/abcd.bmp");
+	struct ImageLine imageLine;
+	charDetection_start(surface, &imageLine, 0);
+	image_renderConsoleFromLine(surface, imageLine);
 
 	return 1;
 }
@@ -59,12 +62,12 @@ int main()
 
 	if(!setup())
 	{
-		err(1, "Error");
+		err(1, "Error during the initial setup.");
 	}
 
 	if(!startImageProcessing())
 	{
-		err(1, "Error");
+		err(1, "Error during the image processing.");
 	}
 
 	printf("MediOCR ended! \n");

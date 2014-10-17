@@ -5,6 +5,7 @@
 #include "SDL/SDL.h"
 
 #include "image.h"
+#include "charDetection.h"
 #include "../helpers/file.h"
 
 SDL_Surface *image_load(char *path)
@@ -36,10 +37,10 @@ SDL_Color image_getPixelColor(SDL_Surface *surface, unsigned x,
 Uint32 image_getPixelUint32(SDL_Surface *surface, unsigned x,
 	unsigned y)
 {
-    Uint8 *p = (Uint8 *)surface->pixels + x * surface->pitch
-             + y * surface->format->BytesPerPixel; //
+    Uint8 *p = (Uint8 *)surface->pixels + y * surface->pitch
+             + x * surface->format->BytesPerPixel;
 
-    switch(surface->format->BytesPerPixel) { //
+    switch(surface->format->BytesPerPixel) {
     case 1:
         return *p;
         break;
@@ -76,24 +77,40 @@ double image_getGreyscaleRatio(SDL_Color color)
 	return image_getGreyscale(color) / 255;
 }
 
-void image_renderConsole(SDL_Surface *surface)
+unsigned image_getPixelBool(SDL_Surface *surface, unsigned x,
+	unsigned y)
 {
-	for(unsigned x = 0; x < 16; x++)
+	return image_getGreyscaleRatio(image_getPixelColor(surface, x, y)) < 0.5;
+}
+
+void image_renderConsoleFromTo(SDL_Surface *surface, unsigned x1, unsigned y1,
+ 	unsigned x2, unsigned y2)
+{
+	for(unsigned y = y1; y < y2; y++)
 	{
-		for(unsigned y = 0; y < 16; y++)
+		for(unsigned x = x1; x < x2; x++)
 		{
-			SDL_Color color = image_getPixelColor(surface, x, y);
-			// printf("Pixel data [%d:%d]: R:%d, G:%d, B: %d\n", x, y,
-			// 	color.b, color.g, color.b);
-			if(image_getGreyscaleRatio(color) > 0.5)
+			if(image_getPixelBool(surface, x, y))
 			{
-				printf(".");
+				printf("0");
 			}
 			else
 			{
-				printf("O");
+				printf(".");
 			}
 		}
 		printf("\n");
 	}
+}
+
+void image_renderConsole(SDL_Surface *surface)
+{
+	image_renderConsoleFromTo(surface, 0, 0, surface->w, surface->h);
+}
+
+void image_renderConsoleFromLine(SDL_Surface *surface,
+	struct ImageLine imageLine)
+{
+	image_renderConsoleFromTo(surface, imageLine.startX,
+		imageLine.startY, imageLine.endX, imageLine.endY);
 }
