@@ -1,6 +1,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <err.h>
 #include <math.h>
 #include "../helpers/maths.h"
@@ -226,16 +227,100 @@ void NeuralNetwork_test(struct NeuralNetwork neuralNetwork,
 	}
 }
 
-// char *NeuralNetwork_serializeWeightsInput(struct NeuralNetwork neuralNetwork)
-// {
-// 	char *seralized = (char*)malloc(30 * sizeof(char));
-//
-// 	for(unsigned i = 0; i < neuralNetwork.numberInput; i++)
-// 	{
-// 		for(unsigned j = 0; j < neuralNetwork.numberHidden; j++)
-// 		{
-// 			char *s;
-//
-// 		}
-// 	}
-// }
+void NeuralNetwork_loadWeightInput(struct NeuralNetwork neuralNetwork,
+	char *serialized)
+{
+	unsigned pos = 0;
+	for(unsigned i = 0; i < neuralNetwork.numberInput; i++)
+	{
+		for(unsigned j = 0; j < neuralNetwork.numberHidden; j++)
+		{
+			unsigned start = pos;
+			while(serialized[pos] != ';')
+			{
+				pos++;
+			}
+			pos++;
+			char *coef = malloc(10 * sizeof(char));
+			strncpy(coef, &serialized[start], pos - start - 1);
+
+			// We actually don't nede to really check for anything
+			// when adding the value to our weights, as we
+			// assume the user is importing correctly serialized
+			// weights.
+			neuralNetwork.weightInput.elements[i].elements[j] =
+				atof(coef);
+		}
+	}
+}
+void NeuralNetwork_loadWeightOutput(struct NeuralNetwork neuralNetwork,
+	char *serialized)
+{
+	unsigned pos = 0;
+	for(unsigned j = 0; j < neuralNetwork.numberHidden; j++)
+	{
+		for(unsigned k = 0; k < neuralNetwork.numberOutput; k++)
+		{
+			unsigned start = pos;
+			while(serialized[pos] != ';')
+			{
+				pos++;
+			}
+			pos++;
+			char *coef = malloc(10 * sizeof(char));
+			strncpy(coef, &serialized[start], pos - start - 1);
+
+			// We actually don't nede to really check for anything
+			// when adding the value to our weights, as we
+			// assume the user is importing correctly serialized
+			// weights.
+			neuralNetwork.weightOutput.elements[j].elements[k] =
+				atof(coef);
+		}
+	}
+}
+
+char *NeuralNetwork_serializeWeightsInput(struct NeuralNetwork
+	neuralNetwork)
+{
+	char *serialized = malloc(1 * sizeof(char));
+	unsigned curSize = 1;
+
+	for(unsigned i = 0; i < neuralNetwork.numberInput; i++)
+	{
+		for(unsigned j = 0; j < neuralNetwork.numberHidden; j++)
+		{
+			curSize += 10;
+			serialized = realloc(serialized, curSize * sizeof(char));
+			char s[10];
+			sprintf(s, "%.6f",
+				neuralNetwork.weightInput.elements[i].elements[j]);
+			strcat(serialized, s);
+			strcat(serialized, ";");
+		}
+	}
+
+	return serialized;
+}
+char *NeuralNetwork_serializeWeightsOutput(struct NeuralNetwork
+	neuralNetwork)
+{
+	char *serialized = malloc(1 * sizeof(char));
+	unsigned curSize = 1;
+
+	for(unsigned j = 0; j < neuralNetwork.numberHidden; j++)
+	{
+		for(unsigned k = 0; k < neuralNetwork.numberOutput; k++)
+		{
+			curSize += 10;
+			serialized = realloc(serialized, curSize * sizeof(char));
+			char s[10];
+			sprintf(s, "%.6f",
+				neuralNetwork.weightOutput.elements[j].elements[k]);
+			strcat(serialized, s);
+			strcat(serialized, ";");
+		}
+	}
+
+	return serialized;
+}

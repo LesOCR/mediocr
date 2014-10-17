@@ -30,6 +30,8 @@ SDL_Surface *image_scale(SDL_Surface *Surface, Uint16 Width, Uint16 Height)
 
 	double _stretch_factor_x = ((double)Width) / ((double)Surface->w);
 	double _stretch_factor_y = ((double)Height) / ((double)Surface->h);
+	printf("%d\n", Surface->w);
+	printf("%d\n", Surface->h);
 
 	for(Sint32 y = 0; y < Surface->h; y++)
 		for(Sint32 x = 0; x < Surface->w; x++)
@@ -147,11 +149,11 @@ void image_renderConsoleFromTo(SDL_Surface *surface, unsigned x1, unsigned y1,
 		{
 			if(image_getPixelBool(surface, x, y))
 			{
-				printf("0");
+				printf("█");
 			}
 			else
 			{
-				printf(".");
+				printf(" ");
 			}
 		}
 		printf("\n");

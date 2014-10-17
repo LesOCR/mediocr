@@ -44,6 +44,14 @@ int startNeuralNetwork()
 
 	NeuralNetwork_test(myNeuralNetwork, input);
 
+	printf("Serialized input weights: \n%s\n",
+		NeuralNetwork_serializeWeightsInput(myNeuralNetwork));
+	printf("Serialized output weights: \n%s\n",
+		NeuralNetwork_serializeWeightsOutput(myNeuralNetwork));
+	printf("Unserializing:\n");
+	NeuralNetwork_loadWeightInput(myNeuralNetwork,
+		NeuralNetwork_serializeWeightsInput(myNeuralNetwork));
+
 	return 1;
 }
 
@@ -81,7 +89,6 @@ int startImageProcessing()
 	/*image_renderConsoleFromChar(*/
 			/*image_scale(surface, 16, 16)*/
 			/*, imageLine.elements[x].chars.elements[y]);*/
-
 	return 1;
 }
 
@@ -94,10 +101,15 @@ int main(int argc, char *argv[])
 		err(1, "Error during the initial setup.");
 	}
 
-	if(!startImageProcessing())
+	if(!startNeuralNetwork())
 	{
-		err(1, "Error during the image processing.");
+		err(1, "Error during the neural network instance.");
 	}
+
+	// if(!startImageProcessing())
+	// {
+	// 	err(1, "Error during the image processing.");
+	// }
 
 	printf("MediOCR ended! \n");
 
