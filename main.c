@@ -50,7 +50,7 @@ int startImageProcessing()
 {
 	SDL_Surface *surface = image_load("data/text/abcd.bmp");
 	struct ImageLine imageLine;
-	charDetection_start(surface, &imageLine, 0);
+	charDetection_line(surface, &imageLine, 0);
 	image_renderConsoleFromLine(surface, imageLine);
 
 	return 1;

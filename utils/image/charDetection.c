@@ -4,7 +4,7 @@
 #include "image.h"
 #include "charDetection.h"
 
-unsigned charDetection_start(SDL_Surface *surface, struct ImageLine *imageLine,
+unsigned charDetection_line(SDL_Surface *surface, struct ImageLine *imageLine,
 	unsigned startY)
 {
 	int topX = surface->w;
@@ -39,6 +39,7 @@ unsigned charDetection_start(SDL_Surface *surface, struct ImageLine *imageLine,
 			}
 		}
 
+		// We're out of the current line, let's get out
 		if(emptyLine && detectedLine)
 		{
 			break;

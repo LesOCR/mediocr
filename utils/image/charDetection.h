@@ -14,7 +14,7 @@ struct ImageLine
 	char *content;
 };
 
-unsigned charDetection_start(SDL_Surface *surface, struct ImageLine *imageLine,
+unsigned charDetection_line(SDL_Surface *surface, struct ImageLine *imageLine,
 	unsigned startY);
 
 #endif
