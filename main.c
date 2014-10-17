@@ -67,7 +67,7 @@ int startImageProcessing()
 	return 1;
 }
 
-int main()
+int main(int argc, char *argc[])
 {
 	printf("MediOCR started! \n");
 
