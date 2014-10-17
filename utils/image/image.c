@@ -19,6 +19,28 @@ SDL_Surface *image_load(char *path)
 	return SDL_LoadBMP(path);
 }
 
+SDL_Surface *image_Scale(SDL_Surface *Surface, Uint16 Width, Uint16 Height)
+{
+	if(!Surface || !Width || !Height)
+		return 0;
+	 
+	SDL_Surface *_ret = SDL_CreateRGBSurface(Surface->flags, Width, Height,
+		Surface->format->BitsPerPixel, Surface->format->Rmask,
+		Surface->format->Gmask, Surface->format->Bmask, Surface->format->Amask);
+ 
+	double _stretch_factor_x = ((double)Width) / ((double)Surface->w);
+	double _stretch_factor_y = ((double)Height) / ((double)Surface->h);
+ 
+	for(Sint32 y = 0; y < Surface->h; y++)
+		for(Sint32 x = 0; x < Surface->w; x++)
+			for(Sint32 o_y = 0; o_y < _stretch_factor_y; ++o_y)
+				for(Sint32 o_x = 0; o_x < _stretch_factor_x; ++o_x)
+					image_putPixel(_ret, (_stretch_factor_x * x) + o_x,
+						(_stretch_factor_y * y) + o_y,
+						image_getPixelUint32(Surface, x, y));
+	return _ret;
+}
+
 SDL_Color image_getPixelColor(SDL_Surface *surface, unsigned x,
 	unsigned y)
 {
@@ -83,7 +105,38 @@ unsigned image_getPixelBool(SDL_Surface *surface, unsigned x,
 	return image_getGreyscaleRatio(image_getPixelColor(surface, x, y)) < 0.5;
 }
 
+static inline
+Uint8* pixelref(SDL_Surface *surf, unsigned x, unsigned y) {
+  int bpp = surf->format->BytesPerPixel;
+  return (Uint8*)surf->pixels + y * surf->pitch + x * bpp;
+}
 
+void image_putPixel(SDL_Surface *surface, unsigned x, unsigned y,
+	Uint32 pixel) {
+	Uint8 *p = pixelref(surface, x, y);
+	switch(surface->format->BytesPerPixel) {
+	case 1:
+		*p = pixel;
+		break;
+	case 2:
+		*(Uint16 *)p = pixel;
+		break;
+	case 3:
+		if(SDL_BYTEORDER == SDL_BIG_ENDIAN) {
+			p[0] = (pixel >> 16) & 0xff;
+			p[1] = (pixel >> 8) & 0xff;
+			p[2] = pixel & 0xff;
+		} else {
+			p[0] = pixel & 0xff;
+			p[1] = (pixel >> 8) & 0xff;
+			p[2] = (pixel >> 16) & 0xff;
+		}
+		break;
+	case 4:
+		*(Uint32 *)p = pixel;
+		break;
+	}
+}
 
 void image_renderConsoleFromTo(SDL_Surface *surface, unsigned x1, unsigned y1,
  	unsigned x2, unsigned y2)
