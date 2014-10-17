@@ -49,21 +49,38 @@ int startNeuralNetwork()
 
 int startImageProcessing()
 {
+
 	SDL_Surface *surface = image_load("data/letters/alphabet.bmp");
 
-	//image_renderConsole(surface);
+	/*image_renderConsole(surface);*/
 
 	ImageLineArray imageLine = charDetection_go(surface);
 
-	for(unsigned x = 0; x < imageLine.sizeX; x++)
-	{
-		for(unsigned y = 0; y < imageLine.elements[x].chars.sizeX; y++)
-		{
-			image_renderConsoleFromChar(
-				image_scale(surface, 16, 16)
-				, imageLine.elements[x].chars.elements[y]);
-		}
-	}
+	SDL_Surface *newSurface = SDL_CreateRGBSurface(surface->flags, 16, 16,
+		surface->format->BitsPerPixel, surface->format->Rmask,
+		surface->format->Gmask, surface->format->Bmask, surface->format->Amask);
+	Sint16 rektWidth = imageLine.elements[0].chars.elements[2].endX -
+		imageLine.elements[0].chars.elements[2].startX;
+	Sint16 rektHeight = imageLine.elements[0].chars.elements[2].endY -
+		imageLine.elements[0].chars.elements[2].startY;
+	printf("%d\n", rektHeight);
+	SDL_Rect rekt = {
+		.x = (Sint16)imageLine.elements[0].chars.elements[2].startX,
+		.y = (Sint16)imageLine.elements[0].chars.elements[2].startY,
+		.w = rektWidth,
+		.h = rektHeight
+	};
+	SDL_Rect newRekt = {
+		.x = 5,
+		.y = 5
+	};
+
+	int r = SDL_BlitSurface(surface, &rekt, newSurface, &newRekt);
+	printf("%d\n", r);
+	image_renderConsole(newSurface);
+	/*image_renderConsoleFromChar(*/
+			/*image_scale(surface, 16, 16)*/
+			/*, imageLine.elements[x].chars.elements[y]);*/
 
 	return 1;
 }
