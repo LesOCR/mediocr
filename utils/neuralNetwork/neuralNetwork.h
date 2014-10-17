@@ -15,6 +15,15 @@ void NeuralNetwork_train(struct NeuralNetwork neuralNetwork,
 void NeuralNetwork_test(struct NeuralNetwork neuralNetwork,
 	unsignedArray2D input);
 
+void NeuralNetwork_loadWeightInput(struct NeuralNetwork neuralNetwork,
+	char *serialized);
+void NeuralNetwork_loadWeightOutput(struct NeuralNetwork neuralNetwork,
+	char *serialized);
+char *NeuralNetwork_serializeWeightsInput(struct NeuralNetwork
+	neuralNetwork);
+char *NeuralNetwork_serializeWeightsOutput(struct NeuralNetwork
+	neuralNetwork);
+
 struct NeuralNetwork
 {
 	unsigned numberInput;
