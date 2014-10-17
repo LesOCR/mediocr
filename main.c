@@ -60,7 +60,8 @@ int startImageProcessing()
 		for(unsigned y = 0; y < imageLine.elements[x].chars.sizeX; y++)
 		{
 			image_renderConsoleFromChar(
-				surface, imageLine.elements[x].chars.elements[y]);
+				image_scale(surface, 16, 16)
+				, imageLine.elements[x].chars.elements[y]);
 		}
 	}
 
