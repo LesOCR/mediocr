@@ -48,10 +48,14 @@ int startNeuralNetwork()
 
 int startImageProcessing()
 {
-	SDL_Surface *surface = image_load("data/text/abcd.bmp");
+	SDL_Surface *surface = image_load("data/text/abcdefgh.bmp");
 	struct ImageLine imageLine;
 	charDetection_line(surface, &imageLine, 0);
-	image_renderConsoleFromLine(surface, imageLine);
+	image_renderConsole(surface);
+
+	struct ImageChar imageChar;
+	charDetection_char(surface, imageLine, &imageChar, 0);
+	image_renderConsoleFromChar(surface, imageChar);
 
 	return 1;
 }

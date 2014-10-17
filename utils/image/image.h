@@ -19,5 +19,7 @@ void image_renderConsoleFromTo(SDL_Surface *surface, unsigned x1, unsigned y1,
 void image_renderConsole(SDL_Surface *surface);
 void image_renderConsoleFromLine(SDL_Surface *surface,
 	struct ImageLine imageLine);
+void image_renderConsoleFromChar(SDL_Surface *surface,
+	struct ImageChar imageChar);
 
 #endif

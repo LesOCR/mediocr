@@ -9,7 +9,8 @@ unsigned charDetection_line(SDL_Surface *surface, struct ImageLine *imageLine,
 {
 	int topX = surface->w;
 	int topY = surface->h;
-	int bottomX, bottomY = -1;
+	int bottomX, bottomY;
+	bottomX = bottomY = -1;
 	unsigned detectedLine = 0;
 	for(int y = startY; y < surface->h; y++)
 	{
@@ -57,6 +58,64 @@ unsigned charDetection_line(SDL_Surface *surface, struct ImageLine *imageLine,
     imageLine->startY = topY;
     imageLine->endX   = ++bottomX;
     imageLine->endY   = ++bottomY;
+
+	return 1;
+}
+
+unsigned charDetection_char(SDL_Surface *surface, struct ImageLine imageLine,
+	struct ImageChar *imageChar, unsigned startX)
+{
+	int topX = surface->w;
+	int topY = surface->h;
+	int bottomX, bottomY;
+	bottomX = bottomY = -1;
+	unsigned detectedChar = 0;
+	for(int x = imageLine.startX + startX; x < (int)imageLine.endX; x++)
+	{
+		unsigned emptyColumn = 1;
+		for(int y = imageLine.startY; y < (int)imageLine.endY; y++)
+		{
+			if(image_getPixelBool(surface, x, y))
+			{
+				emptyColumn = 0;
+				detectedChar = 1;
+				if(topX > x)
+				{
+					topX = x;
+				}
+				if(topY > y)
+				{
+					topY = y;
+				}
+				if(bottomX < x)
+				{
+					bottomX = x;
+				}
+				if(bottomY < y)
+				{
+					bottomY = y;
+				}
+			}
+		}
+
+		// We're out of the current line, let's get out
+		if(emptyColumn && detectedChar)
+		{
+			break;
+		}
+	}
+
+	// If we didn't detect anything
+	if(detectedChar == 0)
+	{
+		return 0;
+	}
+
+	// We detected something, hura!
+	imageChar->startX = topX;
+	imageChar->startY = topY;
+	imageChar->endX   = ++bottomX;
+	imageChar->endY   = ++bottomY;
 
 	return 1;
 }

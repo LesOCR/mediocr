@@ -4,7 +4,7 @@
 #ifndef UTILS_IMAGE_LINEDETECTION_
 #define UTILS_IMAGE_LINEDETECTION_
 
-struct ImageLine
+struct ImageChar
 {
 	unsigned startX;
 	unsigned startY;
@@ -14,7 +14,19 @@ struct ImageLine
 	char *content;
 };
 
+struct ImageLine
+{
+	unsigned startX;
+	unsigned startY;
+	unsigned endX;
+	unsigned endY;
+
+	struct ImageChar *imageChars;
+};
+
 unsigned charDetection_line(SDL_Surface *surface, struct ImageLine *imageLine,
 	unsigned startY);
+unsigned charDetection_char(SDL_Surface *surface, struct ImageLine imageLine,
+	struct ImageChar *imageChar, unsigned startX);
 
 #endif

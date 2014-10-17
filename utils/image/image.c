@@ -114,3 +114,10 @@ void image_renderConsoleFromLine(SDL_Surface *surface,
 	image_renderConsoleFromTo(surface, imageLine.startX,
 		imageLine.startY, imageLine.endX, imageLine.endY);
 }
+
+void image_renderConsoleFromChar(SDL_Surface *surface,
+	struct ImageChar imageChar)
+{
+	image_renderConsoleFromTo(surface, imageChar.startX,
+		imageChar.startY, imageChar.endX, imageChar.endY);
+}
