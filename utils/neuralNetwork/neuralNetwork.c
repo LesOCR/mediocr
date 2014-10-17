@@ -225,3 +225,17 @@ void NeuralNetwork_test(struct NeuralNetwork neuralNetwork,
 		printf("\n");
 	}
 }
+
+// char *NeuralNetwork_serializeWeightsInput(struct NeuralNetwork neuralNetwork)
+// {
+// 	char *seralized = (char*)malloc(30 * sizeof(char));
+//
+// 	for(unsigned i = 0; i < neuralNetwork.numberInput; i++)
+// 	{
+// 		for(unsigned j = 0; j < neuralNetwork.numberHidden; j++)
+// 		{
+// 			char *s;
+//
+// 		}
+// 	}
+// }
