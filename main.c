@@ -45,12 +45,12 @@ int startNeuralNetwork()
 	NeuralNetwork_test(myNeuralNetwork, input);
 
 	printf("Serialized input weights: \n%s\n",
-		NeuralNetwork_serializeWeightsInput(myNeuralNetwork));
+			NeuralNetwork_serializeWeightsInput(myNeuralNetwork));
 	printf("Serialized output weights: \n%s\n",
-		NeuralNetwork_serializeWeightsOutput(myNeuralNetwork));
+			NeuralNetwork_serializeWeightsOutput(myNeuralNetwork));
 	printf("Unserializing:\n");
 	NeuralNetwork_loadWeightInput(myNeuralNetwork,
-		NeuralNetwork_serializeWeightsInput(myNeuralNetwork));
+			NeuralNetwork_serializeWeightsInput(myNeuralNetwork));
 
 	return 1;
 }
@@ -58,19 +58,13 @@ int startNeuralNetwork()
 int startImageProcessing()
 {
 	SDL_Surface *surface = image_load("data/letters/alphabet.bmp");
-
-	//image_renderConsole(surface);
-
 	ImageLineArray imageLine = charDetection_go(surface);
 
-	for(unsigned x = 0; x < imageLine.sizeX; x++)
-	{
-		for(unsigned y = 0; y < imageLine.elements[x].chars.sizeX; y++)
-		{
-			image_renderConsoleFromChar(
-				image_scale(surface, 16, 16),
-				imageLine.elements[x].chars.elements[y]);
-		}
+	for(unsigned i = 0; i < 52; i++) {
+		SDL_Surface *s = image_extractChar(surface,
+				&imageLine.elements[0].chars.elements[i]);
+		image_renderConsole(image_scale(s, 16, 16));
+		printf("\n");
 	}
 
 	return 1;
@@ -85,15 +79,15 @@ int main(int argc, char *argv[])
 		err(1, "Error during the initial setup.");
 	}
 
-	if(!startNeuralNetwork())
-	{
-		err(1, "Error during the neural network instance.");
-	}
-
-	// if(!startImageProcessing())
+	// if(!startNeuralNetwork())
 	// {
-	// 	err(1, "Error during the image processing.");
+	// 	err(1, "Error during the neural network instance.");
 	// }
+
+	if(!startImageProcessing())
+	{
+		err(1, "Error during the image processing.");
+	}
 
 	printf("MediOCR ended! \n");
 
