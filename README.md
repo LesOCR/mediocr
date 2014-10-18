@@ -7,8 +7,8 @@ MediOCR is a next generation, high performances OCR made by EPITA students.
 ### Git
 
 ```
-# git clone https://github.com/Artemiche/mediocr.git
-# make all
+# git clone https://github.com/lesocr/mediocr.git
+# make
 ```
 
 ## Usage
