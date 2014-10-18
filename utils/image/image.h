@@ -9,6 +9,7 @@
 
 SDL_Surface *image_load(char *path);
 SDL_Surface *image_scale(SDL_Surface *Surface, Uint16 Width, Uint16 Height);
+SDL_Surface *image_extractChar(SDL_Surface *surface, struct ImageChar *c);
 
 Uint32 image_getPixelUint32(SDL_Surface *surface, unsigned x, unsigned y);
 SDL_Color image_getPixelColor(SDL_Surface *surface, unsigned x, unsigned y);

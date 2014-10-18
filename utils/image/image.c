@@ -30,8 +30,6 @@ SDL_Surface *image_scale(SDL_Surface *Surface, Uint16 Width, Uint16 Height)
 
 	double _stretch_factor_x = ((double)Width) / ((double)Surface->w);
 	double _stretch_factor_y = ((double)Height) / ((double)Surface->h);
-	printf("%d\n", Surface->w);
-	printf("%d\n", Surface->h);
 
 	for(Sint32 y = 0; y < Surface->h; y++)
 		for(Sint32 x = 0; x < Surface->w; x++)
@@ -41,6 +39,29 @@ SDL_Surface *image_scale(SDL_Surface *Surface, Uint16 Width, Uint16 Height)
 						(_stretch_factor_y * y) + o_y,
 						image_getPixelUint32(Surface, x, y));
 	return _ret;
+}
+
+SDL_Surface *image_extractChar(SDL_Surface *surface, struct ImageChar *c) {
+	int w = c->endX - c->startX;
+	int h = c->endY - c->startY;
+
+	SDL_Surface *newSurface = SDL_CreateRGBSurface(surface->flags, w, h,
+		surface->format->BitsPerPixel, surface->format->Rmask,
+		surface->format->Gmask, surface->format->Bmask, surface->format->Amask);
+
+	SDL_Rect rectMask = {
+		.x = (Sint16)c->startX,
+		.y = (Sint16)c->startY,
+		.w = (Sint16)w,
+		.h = (Sint16)h
+	};
+
+	int r = SDL_BlitSurface(surface, &rectMask, newSurface, NULL);
+	if (r) {
+		return 0;
+	}
+
+	return newSurface;
 }
 
 SDL_Color image_getPixelColor(SDL_Surface *surface, unsigned x,
