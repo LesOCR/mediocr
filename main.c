@@ -45,50 +45,28 @@ int startNeuralNetwork()
 	NeuralNetwork_test(myNeuralNetwork, input);
 
 	printf("Serialized input weights: \n%s\n",
-		NeuralNetwork_serializeWeightsInput(myNeuralNetwork));
+			NeuralNetwork_serializeWeightsInput(myNeuralNetwork));
 	printf("Serialized output weights: \n%s\n",
-		NeuralNetwork_serializeWeightsOutput(myNeuralNetwork));
+			NeuralNetwork_serializeWeightsOutput(myNeuralNetwork));
 	printf("Unserializing:\n");
 	NeuralNetwork_loadWeightInput(myNeuralNetwork,
-		NeuralNetwork_serializeWeightsInput(myNeuralNetwork));
+			NeuralNetwork_serializeWeightsInput(myNeuralNetwork));
 
 	return 1;
 }
 
 int startImageProcessing()
 {
-
 	SDL_Surface *surface = image_load("data/letters/alphabet.bmp");
-
-	/*image_renderConsole(surface);*/
-
 	ImageLineArray imageLine = charDetection_go(surface);
 
-	SDL_Surface *newSurface = SDL_CreateRGBSurface(surface->flags, 16, 16,
-		surface->format->BitsPerPixel, surface->format->Rmask,
-		surface->format->Gmask, surface->format->Bmask, surface->format->Amask);
-	Sint16 rektWidth = imageLine.elements[0].chars.elements[2].endX -
-		imageLine.elements[0].chars.elements[2].startX;
-	Sint16 rektHeight = imageLine.elements[0].chars.elements[2].endY -
-		imageLine.elements[0].chars.elements[2].startY;
-	printf("%d\n", rektHeight);
-	SDL_Rect rekt = {
-		.x = (Sint16)imageLine.elements[0].chars.elements[2].startX,
-		.y = (Sint16)imageLine.elements[0].chars.elements[2].startY,
-		.w = rektWidth,
-		.h = rektHeight
-	};
-	SDL_Rect newRekt = {
-		.x = 5,
-		.y = 5
-	};
+	for(unsigned i = 0; i < 52; i++) {
+		SDL_Surface *s = image_extractChar(surface,
+				&imageLine.elements[0].chars.elements[i]);
+		image_renderConsole(image_scale(s, 16, 16));
+		printf("\n");
+	}
 
-	int r = SDL_BlitSurface(surface, &rekt, newSurface, &newRekt);
-	printf("%d\n", r);
-	image_renderConsole(newSurface);
-	/*image_renderConsoleFromChar(*/
-			/*image_scale(surface, 16, 16)*/
-			/*, imageLine.elements[x].chars.elements[y]);*/
 	return 1;
 }
 
@@ -101,15 +79,15 @@ int main(int argc, char *argv[])
 		err(1, "Error during the initial setup.");
 	}
 
-	if(!startNeuralNetwork())
-	{
-		err(1, "Error during the neural network instance.");
-	}
+	/*if(!startNeuralNetwork())*/
+	/*{*/
+	/*err(1, "Error during the neural network instance.");*/
+	/*}*/
 
-	// if(!startImageProcessing())
-	// {
-	// 	err(1, "Error during the image processing.");
-	// }
+	if(!startImageProcessing())
+	{
+		err(1, "Error during the image processing.");
+	}
 
 	printf("MediOCR ended! \n");
 
