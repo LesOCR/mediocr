@@ -79,10 +79,10 @@ int main(int argc, char *argv[])
 		err(1, "Error during the initial setup.");
 	}
 
-	/*if(!startNeuralNetwork())*/
-	/*{*/
-	/*err(1, "Error during the neural network instance.");*/
-	/*}*/
+	// if(!startNeuralNetwork())
+	// {
+	// 	err(1, "Error during the neural network instance.");
+	// }
 
 	if(!startImageProcessing())
 	{
