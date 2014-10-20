@@ -37,9 +37,10 @@ void push_ImageLineArray(ImageLineArray *array, struct ImageLine imageLine)
 void add_ImageLineArray(ImageLineArray *array, unsigned i,
 	struct ImageLine imageLine)
 {
-	if(i > array->capacity) {
+	if (i >= array->capacity) {
 		// Reallocate some memory
-		array->capacity *= 2;
+		while (i >= array->capacity)
+			array->capacity <<= 1;
 		array->elements = realloc(array->elements, array->capacity*
 			sizeof(struct ImageLine));
 		if(array->elements == NULL)
@@ -58,9 +59,10 @@ void push_ImageCharArray(ImageCharArray *array, struct ImageChar imageChar)
 void add_ImageCharArray(ImageCharArray *array, unsigned i,
 	struct ImageChar imageChar)
 {
-	if(i > array->capacity) {
+	if (i >= array->capacity) {
 		// Reallocate some memory
-		array->capacity *= 2;
+		while (i >= array->capacity)
+			array->capacity <<= 1;
 		array->elements = realloc(array->elements, array->capacity*
 			sizeof(struct ImageChar));
 		if(array->elements == NULL)
