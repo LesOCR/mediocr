@@ -57,14 +57,16 @@ int startNeuralNetwork()
 
 int startImageProcessing()
 {
-	SDL_Surface *surface = image_load("data/letters/alphabet.bmp");
+	SDL_Surface *surface = image_load("data/text/3lines.bmp");
 	ImageLineArray imageLine = charDetection_go(surface);
 
-	for(unsigned i = 0; i < 52; i++) {
-		SDL_Surface *s = image_extractChar(surface,
-				&imageLine.elements[0].chars.elements[i]);
-		image_renderConsole(image_scale(s, 16, 16));
-		printf("\n");
+	for(unsigned i = 0; i < imageLine.size; i++) {
+		for(unsigned j = 0; j < imageLine.elements[i].chars.size; j++) {
+			SDL_Surface *s = image_extractChar(surface,
+					&imageLine.elements[i].chars.elements[j]);
+			image_renderConsole(image_scale(s, 16, 16));
+			printf("\n");
+		}
 	}
 
 	return 1;
