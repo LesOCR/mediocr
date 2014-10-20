@@ -127,7 +127,6 @@ ImageLineArray charDetection_go(SDL_Surface *surface)
 
 	struct ImageLine imageLine;
 	unsigned startY = 0;
-	unsigned x = 0;
 
 	while(charDetection_line(surface, &imageLine, startY) == 1)
 	{
@@ -145,7 +144,7 @@ ImageLineArray charDetection_go(SDL_Surface *surface)
 		imageLine.chars = charArray;
 
 		startY = imageLine.endY;
-		add_ImageLineArray(&lineArray, x++, imageLine);
+		push_ImageLineArray(&lineArray, imageLine);
 	}
 
 	return lineArray;
