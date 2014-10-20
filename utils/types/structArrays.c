@@ -3,24 +3,13 @@
 #include "../image/charDetection.h"
 #include "structArrays.h"
 
+/* ImageLineArray functions */
+
 ImageLineArray new_ImageLineArray(unsigned i)
 {
 	struct ImageLine *x;
 	ImageLineArray newArray;
 	x = calloc(i, i*sizeof(struct ImageLine));
-
-	newArray.capacity = i;
-	newArray.size = 0;
-	newArray.elements = x;
-
-	return newArray;
-}
-
-ImageCharArray new_ImageCharArray(unsigned i)
-{
-	struct ImageChar *x;
-	ImageCharArray newArray;
-	x = calloc(i, i*sizeof(struct ImageChar));
 
 	newArray.capacity = i;
 	newArray.size = 0;
@@ -49,6 +38,19 @@ void add_ImageLineArray(ImageLineArray *array, unsigned i,
 
 	array->elements[i] = imageLine;
 	array->size++;
+}
+
+/* ImageCharArray functions */
+
+ImageCharArray new_ImageCharArray(unsigned i)
+{
+	ImageCharArray newArray;
+
+	newArray.capacity = i;
+	newArray.size = 0;
+	newArray.elements = calloc(i, i*sizeof(struct ImageChar));
+
+	return newArray;
 }
 
 void push_ImageCharArray(ImageCharArray *array, struct ImageChar imageChar)
