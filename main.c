@@ -55,6 +55,39 @@ int startNeuralNetwork()
 	return 1;
 }
 
+int startNeuralNetworkChar()
+{
+	struct NeuralNetwork myNeuralNetwork = neuralNetwork_main(128, 2, 1);
+
+	unsignedArray2D input  = new_unsignedArray2D(56, 128);
+	unsignedArray2D output = new_unsignedArray2D(56, 1);
+
+	SDL_Surface *surface = image_load("data/text/alphabet.bmp");
+	ImageLineArray imageLine = charDetection_go(surface);
+	for(unsigned i = 0; i < imageLine.size; i++) {
+		for(unsigned j = 0; j < imageLine.elements[i].chars.size; j++) {
+			SDL_Surface *s = image_extractChar(surface,
+					&imageLine.elements[i].chars.elements[j]);
+			for(unsigned k = 0; k < 16; k++)
+			{
+				for(unsigned l = 0; l < 16; l++)
+				{
+					input.elements[j + i * 16].elements[k + l * 16] =
+						image_getPixelBool(s, k, l);
+
+					output.elements[j + i * 15].elements[0] = (j + i * 16 == 0);
+				}
+			}
+		}
+	}
+
+	NeuralNetwork_train(myNeuralNetwork, input, output, 1000, 0.5, 0);
+
+	NeuralNetwork_test(myNeuralNetwork, input);
+
+	return 1;
+}
+
 int startImageProcessing()
 {
 	SDL_Surface *surface = image_load("data/text/3lines.bmp");
@@ -86,9 +119,14 @@ int main(int argc, char *argv[])
 	// 	err(1, "Error during the neural network instance.");
 	// }
 
-	if(!startImageProcessing())
+	// if(!startImageProcessing())
+	// {
+	// 	err(1, "Error during the image processing.");
+	// }
+
+	if(!startNeuralNetworkChar())
 	{
-		err(1, "Error during the image processing.");
+		err(1, "Error during the real neural network instance");
 	}
 
 	printf("MediOCR ended! \n");
