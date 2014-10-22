@@ -6,6 +6,7 @@
 #include "SDL/SDL.h"
 
 #include "utils/neuralNetwork/neuralNetwork.h"
+#include "utils/neuralNetwork/charRecognition.h"
 #include "utils/types/arrays.h"
 #include "utils/image/image.h"
 #include "utils/image/charDetection.h"
@@ -21,7 +22,7 @@ int setup()
 
 int startNeuralNetwork()
 {
-	struct NeuralNetwork myNeuralNetwork = neuralNetwork_main(2, 2, 1);
+	struct NeuralNetwork *myNeuralNetwork = neuralNetwork_main(2, 2, 1);
 
 	unsignedArray2D input  = new_unsignedArray2D(4, 2);
 	unsignedArray2D output = new_unsignedArray2D(4, 1);
@@ -57,33 +58,76 @@ int startNeuralNetwork()
 
 int startNeuralNetworkChar()
 {
-	struct NeuralNetwork myNeuralNetwork = neuralNetwork_main(128, 2, 1);
-
-	unsignedArray2D input  = new_unsignedArray2D(56, 128);
-	unsignedArray2D output = new_unsignedArray2D(56, 1);
-
 	SDL_Surface *surface = image_load("data/text/alphabet.bmp");
+	char characters[56] = {
+		'a',
+		'b',
+		'c',
+		'd',
+		'e',
+		'f',
+		'g',
+		'h',
+		'i',
+		'j',
+		'k',
+		'l',
+		'm',
+		'n',
+		'o',
+		'p',
+		'q',
+		'r',
+		's',
+		't',
+		'u',
+		'v',
+		'w',
+		'x',
+		'y',
+		'z',
+		'A',
+		'B',
+		'C',
+		'D',
+		'E',
+		'F',
+		'G',
+		'H',
+		'I',
+		'J',
+		'K',
+		'L',
+		'M',
+		'N',
+		'O',
+		'P',
+		'Q',
+		'R',
+		'S',
+		'T',
+		'U',
+		'V',
+		'W',
+		'X',
+		'Y',
+		'Z'
+	};
+
+	struct charRecognitionList *charRecog = charRecognition_learn(surface,
+		characters, 56);
+
 	ImageLineArray imageLine = charDetection_go(surface);
-	for(unsigned i = 0; i < imageLine.size; i++) {
-		for(unsigned j = 0; j < imageLine.elements[i].chars.size; j++) {
+	for(unsigned i = 0; i < imageLine.size; i++)
+	{
+		for(unsigned j = 0; j < imageLine.elements[i].chars.size; j++)
+		{
 			SDL_Surface *s = image_extractChar(surface,
 					&imageLine.elements[i].chars.elements[j]);
-			for(unsigned k = 0; k < 16; k++)
-			{
-				for(unsigned l = 0; l < 16; l++)
-				{
-					input.elements[j + i * 16].elements[k + l * 16] =
-						image_getPixelBool(s, k, l);
 
-					output.elements[j + i * 15].elements[0] = (j + i * 16 == 0);
-				}
-			}
+			printf("\nRecognized char: %c\n", charRecognition_getChar(charRecog, s));
 		}
 	}
-
-	NeuralNetwork_train(myNeuralNetwork, input, output, 1000, 0.5, 0);
-
-	NeuralNetwork_test(myNeuralNetwork, input);
 
 	return 1;
 }

@@ -22,7 +22,7 @@ LDLIBS= -lm `sdl-config --cflags --libs`
 all: main clean
 
 # main target using implicit rules, just express dependencies
-main: main.o utils/neuralNetwork/neuralNetwork.o utils/helpers/maths.o utils/helpers/file.o utils/types/arrays.o utils/types/structArrays.o  utils/image/image.o utils/image/charDetection.o
+main: main.o utils/neuralNetwork/neuralNetwork.o utils/neuralNetwork/charRecognition.o utils/helpers/maths.o utils/helpers/file.o utils/types/arrays.o utils/types/structArrays.o  utils/image/image.o utils/image/charDetection.o
 
 .PHONY: clean
 
