@@ -1,5 +1,6 @@
 
 #include <SDL/SDL.h>
+#include <math.h>
 
 #include "NeuralNetwork.h"
 #include "../types/arrays.h"
@@ -9,12 +10,13 @@
 struct charRecognitionList *charRecognition_learn(SDL_Surface *surface,
 	char chars[], size_t size)
 {
+	size++;
 	struct charRecognitionList *charRegList =
 		malloc(sizeof(struct charRecognitionList));
 
 	struct charRecognitionList *firstList = charRegList;
 
-	for(unsigned h = 0; h < size; h++)
+	for(unsigned h = 0; h < size - 1; h++)
 	{
 		struct NeuralNetwork *myNeuralNetwork = neuralNetwork_main(128, 2, 1);
 
@@ -24,8 +26,8 @@ struct charRecognitionList *charRecognition_learn(SDL_Surface *surface,
 		ImageLineArray imageLine = charDetection_go(surface);
 		for(unsigned i = 0; i < imageLine.size; i++) {
 			for(unsigned j = 0; j < imageLine.elements[i].chars.size; j++) {
-				SDL_Surface *s = image_extractChar(surface,
-						&imageLine.elements[i].chars.elements[j]);
+				SDL_Surface *s = image_scale(image_extractChar(surface,
+						&imageLine.elements[i].chars.elements[j]), 16, 16);
 				for(unsigned k = 0; k < 16; k++)
 				{
 					for(unsigned l = 0; l < 16; l++)
@@ -33,17 +35,18 @@ struct charRecognitionList *charRecognition_learn(SDL_Surface *surface,
 						input.elements[j + i * 16].elements[k + l * 16] =
 							image_getPixelBool(s, k, l);
 
-						output.elements[j + i * 15].elements[0] = (j + i * 16 == 0);
+						output.elements[j + i * 16].elements[0] = (j + i * 16 == h);
 					}
 				}
 			}
 		}
 
-		NeuralNetwork_train(myNeuralNetwork, input, output, 100, 0.1, 0);
+		NeuralNetwork_train(myNeuralNetwork, input, output, 10000, 0.1, 0);
 
-		struct charRecognition charReg;
-		charReg.network = myNeuralNetwork;
-		charReg.letter  = chars[h];
+
+		struct charRecognition *charReg = malloc(sizeof(struct charRecognition));
+		charReg->network = myNeuralNetwork;
+		charReg->letter  = chars[h];
 
 		charRegList->current = charReg;
 
@@ -53,6 +56,8 @@ struct charRecognitionList *charRecognition_learn(SDL_Surface *surface,
 
 		charRegList = newCharRegList;
 		charRegList->next = NULL;
+
+		printf("char %c learned!\n", chars[h]);
 	}
 
 	return firstList;
@@ -75,15 +80,16 @@ char charRecognition_getChar(struct charRecognitionList *list,
 		}
 	}
 
-	while(list != NULL)
+	printf("Generated input of the image\n");
+
+	while(list->next != NULL)
 	{
 		doubleArray ratio =
-			NeuralNetwork_testDouble(list->current.network, input);
-		print_doubleArray(ratio);
-		if(abs(ratio.elements[0]) > bestRatio)
+			NeuralNetwork_testDouble(list->current->network, input);
+		if(fabs(ratio.elements[0]) > bestRatio)
 		{
-			bestRatio = abs(ratio.elements[0]);
-			bestChar  = list->current.letter;
+			bestRatio = fabs(ratio.elements[0]);
+			bestChar  = list->current->letter;
 		}
 
 		list = list->next;

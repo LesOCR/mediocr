@@ -15,7 +15,7 @@ struct charRecognition
 
 struct charRecognitionList
 {
-	struct charRecognition current;
+	struct charRecognition *current;
 	struct charRecognitionList *next;
 };
 

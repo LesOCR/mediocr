@@ -194,9 +194,10 @@ void NeuralNetwork_train(struct NeuralNetwork *neuralNetwork,
 	unsignedArray2D input, unsignedArray2D output, unsigned iterations,
 	double learningRate, double momentumFactor)
 {
+	double error = 0;
 	for(unsigned i = 0; i < iterations; i++)
 	{
-		double error = 0;
+		error = 0;
 
 		for(unsigned j = 0; j < input.sizeX; j++)
 		{
@@ -206,12 +207,9 @@ void NeuralNetwork_train(struct NeuralNetwork *neuralNetwork,
 					neuralNetwork, output.elements[j],
 					learningRate, momentumFactor);
 		}
-
-		if(i % 100 == 0)
-		{
-			printf("error percentage: %f\n", error * 100);
-		}
 	}
+
+	printf("Error percentage: %f\n", error * 100);
 }
 
 void NeuralNetwork_test(struct NeuralNetwork *neuralNetwork,
