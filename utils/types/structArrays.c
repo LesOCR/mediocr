@@ -9,7 +9,7 @@ ImageLineArray new_ImageLineArray(unsigned i)
 {
 	struct ImageLine *x;
 	ImageLineArray newArray;
-	x = calloc(i, i * sizeof(struct ImageLine));
+	x = calloc(i, i*sizeof (struct ImageLine));
 
 	newArray.capacity = i;
 	newArray.size = 0;
@@ -31,7 +31,7 @@ void add_ImageLineArray(ImageLineArray *array, unsigned i,
 		while (i >= array->capacity)
 			array->capacity <<= 1;
 		array->elements = realloc(array->elements,
-								  array->capacity * sizeof(struct ImageLine));
+								  array->capacity*sizeof (struct ImageLine));
 		if (array->elements == NULL)
 			errx(1, "ImageLineArray: Could not reallocate memory\n");
 	}
@@ -48,7 +48,7 @@ ImageCharArray new_ImageCharArray(unsigned i)
 
 	newArray.capacity = i;
 	newArray.size = 0;
-	newArray.elements = calloc(i, i * sizeof(struct ImageChar));
+	newArray.elements = calloc(i, i*sizeof (struct ImageChar));
 
 	return newArray;
 }
@@ -66,7 +66,7 @@ void add_ImageCharArray(ImageCharArray *array, unsigned i,
 		while (i >= array->capacity)
 			array->capacity <<= 1;
 		array->elements = realloc(array->elements,
-								  array->capacity * sizeof(struct ImageChar));
+								  array->capacity*sizeof (struct ImageChar));
 		if (array->elements == NULL)
 			errx(1, "ImageCharArray: Could not reallocate memory\n");
 	}

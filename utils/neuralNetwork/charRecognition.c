@@ -11,7 +11,7 @@ struct charRecognitionList *charRecognition_learn(SDL_Surface *surface,
 {
 	size++;
 	struct charRecognitionList *charRegList =
-		malloc(sizeof(struct charRecognitionList));
+		malloc(sizeof (struct charRecognitionList));
 
 	struct charRecognitionList *firstList = charRegList;
 
@@ -30,25 +30,25 @@ struct charRecognitionList *charRecognition_learn(SDL_Surface *surface,
 					16, 16);
 				for (unsigned k = 0; k < 16; k++)
 					for (unsigned l = 0; l < 16; l++) {
-						input.elements[j + i * 16].elements[k + l * 16] =
+						input.elements[j + i*16].elements[k + l*16] =
 							image_getPixelBool(s, k, l);
 
-						output.elements[j + i * 16].elements[0] =
-							(j + i * 16 == h);
+						output.elements[j + i*16].elements[0] =
+							(j + i*16 == h);
 					}
 			}
 
 		NeuralNetwork_train(myNeuralNetwork, input, output, 10000, 0.1, 0);
 
 		struct charRecognition *charReg =
-			malloc(sizeof(struct charRecognition));
+			malloc(sizeof (struct charRecognition));
 		charReg->network = myNeuralNetwork;
 		charReg->letter = chars[h];
 
 		charRegList->current = charReg;
 
 		struct charRecognitionList *newCharRegList =
-			malloc(sizeof(struct charRecognitionList));
+			malloc(sizeof (struct charRecognitionList));
 		charRegList->next = newCharRegList;
 
 		charRegList = newCharRegList;
@@ -70,7 +70,7 @@ char charRecognition_getChar(struct charRecognitionList *list,
 
 	for (unsigned k = 0; k < 16; k++)
 		for (unsigned l = 0; l < 16; l++)
-			input.elements[k + l * 16] = image_getPixelBool(surface, k, l);
+			input.elements[k + l*16] = image_getPixelBool(surface, k, l);
 
 	printf("Generated input of the image\n");
 
