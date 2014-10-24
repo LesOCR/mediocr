@@ -1,4 +1,3 @@
-
 #include <time.h>
 #include <math.h>
 #include <stdlib.h>
@@ -13,7 +12,7 @@ double maths_rand(double a, double b)
 double maths_sigmoid(double x)
 {
 	return tanh(x);
-	//return 1 / (1 + exp(-x));
+	// return 1 / (1 + exp(-x));
 }
 
 double maths_dsigmoid(double y)

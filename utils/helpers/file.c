@@ -1,4 +1,3 @@
-
 #include <unistd.h>
 
 unsigned file_exists(char *path)
