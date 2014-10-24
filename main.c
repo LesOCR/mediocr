@@ -103,6 +103,7 @@ void outputHelp()
 	printf(" -f: Path of the file that needs to be processed.\n");
 	printf(" -c: Path of the file used by the neural network to learn.\n");
 	printf(" -s: String containing the chars in the file used to learn.\n");
+	printf(" -h: Show this wonderful help.\n");
 	printf("------------------------------------------------------------------------\n");
 
 	exit(EXIT_FAILURE);
@@ -128,8 +129,6 @@ int main(int argc, char *argv[])
 			charList = optarg;
 			break;
 		case 'h':
-			outputHelp();
-			break;
 		default:
 			outputHelp();
 		}
