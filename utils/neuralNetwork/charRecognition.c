@@ -47,14 +47,14 @@ struct charRecognitionList *charRecognition_learn(SDL_Surface *surface,
 		NeuralNetwork_train(myNeuralNetwork, input, output, 0.001, 0.1, 0);
 
 		struct charRecognition *charReg =
-			malloc(sizeof(struct charRecognition));
+			malloc(sizeof (struct charRecognition));
 		charReg->network = myNeuralNetwork;
 		charReg->letter = chars[h];
 
 		charRegList->current = charReg;
 
 		struct charRecognitionList *newCharRegList =
-			malloc(sizeof(struct charRecognitionList));
+			malloc(sizeof (struct charRecognitionList));
 		charRegList->next = newCharRegList;
 
 		charRegList = newCharRegList;
@@ -73,7 +73,7 @@ char charRecognition_getChar(struct charRecognitionList *list,
 
 	for (unsigned k = 0; k < 16; k++)
 		for (unsigned l = 0; l < 16; l++)
-			input.elements[k + l * 16] = image_getPixelBool(surface, k, l);
+			input.elements[k + l*16] = image_getPixelBool(surface, k, l);
 
 	double bestRatio = 0;
 	char   bestChar = '\0';
