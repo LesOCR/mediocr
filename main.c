@@ -117,8 +117,7 @@ int main(int argc, char *argv[])
 	char *charList = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 
 	while ((c = getopt(argc, argv, "f:c:s:h")) != -1) {
-		switch(c)
-		{
+		switch(c) {
 		case 'f':
 			filePath = optarg;
 			break;
