@@ -56,20 +56,18 @@ int startNeuralNetwork()
 int startNeuralNetworkChar()
 {
 	SDL_Surface *surface = image_load("data/text/caps.bmp");
-	char characters[26] = {
-		'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M',
-		'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'};
+	char characters[26] = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 
 	struct charRecognitionList *charRecog = charRecognition_learn(surface,
 		characters, 26);
 
-	ImageLineArray imageLine = charDetection_go(surface);
+
+	SDL_Surface *text = image_load("data/text/awesome.bmp");
+	ImageLineArray imageLine = charDetection_go(text);
 	printf("Recognized string: \n");
-	for(unsigned i = 0; i < imageLine.size; i++)
-	{
-		for(unsigned j = 0; j < imageLine.elements[i].chars.size; j++)
-		{
-			SDL_Surface *s = image_scale(image_extractChar(surface,
+	for(unsigned i = 0; i < imageLine.size; i++) {
+		for(unsigned j = 0; j < imageLine.elements[i].chars.size; j++) {
+			SDL_Surface *s = image_scale(image_extractChar(text,
 					&imageLine.elements[i].chars.elements[j]), 16, 16);
 
 			printf("%c", charRecognition_getChar(charRecog, s));

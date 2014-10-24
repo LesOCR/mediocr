@@ -18,7 +18,7 @@ struct charRecognitionList *charRecognition_learn(SDL_Surface *surface,
 	{
 		printf("learning char %c...\n", chars[h]);
 
-		struct NeuralNetwork *myNeuralNetwork = neuralNetwork_main(256, 2, 1);
+		struct NeuralNetwork *myNeuralNetwork = neuralNetwork_main(256, 10, 1);
 
 		unsignedArray2D input  = new_unsignedArray2D(size, 256);
 		unsignedArray2D output = new_unsignedArray2D(size, 1);
@@ -40,7 +40,7 @@ struct charRecognitionList *charRecognition_learn(SDL_Surface *surface,
 			}
 		}
 
-		NeuralNetwork_train(myNeuralNetwork, input, output, 0.001, 0.1, 0);
+		NeuralNetwork_train(myNeuralNetwork, input, output, 0.0001, 0.1, 0);
 
 		struct charRecognition *charReg =
 			malloc(sizeof(struct charRecognition));
