@@ -10,7 +10,7 @@ unsignedArray input);
 double NeuralNetwork_backPropagate(struct NeuralNetwork *neuralNetwork,
 	unsignedArray output, double learningRate, double momentumFactor);
 void NeuralNetwork_train(struct NeuralNetwork *neuralNetwork,
-	unsignedArray2D input, unsignedArray2D output, unsigned iterations,
+	unsignedArray2D input, unsignedArray2D output, double threshold,
 	double learningRate, double momentumFactor);
 void NeuralNetwork_test(struct NeuralNetwork *neuralNetwork,
 	unsignedArray2D input);
