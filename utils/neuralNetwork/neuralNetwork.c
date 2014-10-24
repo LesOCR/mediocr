@@ -13,7 +13,7 @@ struct NeuralNetwork *neuralNetwork_main(unsigned ni, unsigned nh, unsigned no)
 
 	// Initialize our structure
 	struct NeuralNetwork *myNeuralNetwork =
-		malloc(sizeof (struct NeuralNetwork));
+		malloc(sizeof(struct NeuralNetwork));
 
 	// Initialize values of our structure
 	myNeuralNetwork->numberInput = ++ni; // + 1 for bias node
@@ -73,7 +73,7 @@ doubleArray NeuralNetwork_update(struct NeuralNetwork *neuralNetwork,
 	for (unsigned j = 0; j < neuralNetwork->numberHidden; j++) {
 		double sum = 0;
 		for (unsigned i = 0; i < neuralNetwork->numberInput; i++)
-			sum += neuralNetwork->activationInput.elements[i]*
+			sum += neuralNetwork->activationInput.elements[i] *
 				   neuralNetwork->weightInput.elements[i].elements[j];
 		neuralNetwork->activationHidden.elements[j] = maths_sigmoid(sum);
 	}
@@ -82,7 +82,7 @@ doubleArray NeuralNetwork_update(struct NeuralNetwork *neuralNetwork,
 	for (unsigned k = 0; k < neuralNetwork->numberOutput; k++) {
 		double sum = 0;
 		for (unsigned j = 0; j < neuralNetwork->numberHidden; j++)
-			sum += neuralNetwork->activationHidden.elements[j]*
+			sum += neuralNetwork->activationHidden.elements[j] *
 				   neuralNetwork->weightOutput.elements[j].elements[k];
 		neuralNetwork->activationOutput.elements[k] = maths_sigmoid(sum);
 	}
@@ -104,7 +104,7 @@ double NeuralNetwork_backPropagate(struct NeuralNetwork *neuralNetwork,
 		double error =
 			targets.elements[k] - neuralNetwork->activationOutput.elements[k];
 		outputDeltas.elements[k] =
-			maths_dsigmoid(neuralNetwork->activationOutput.elements[k])*error;
+			maths_dsigmoid(neuralNetwork->activationOutput.elements[k]) * error;
 	}
 
 	// Calculate error terms for hidden
@@ -112,20 +112,20 @@ double NeuralNetwork_backPropagate(struct NeuralNetwork *neuralNetwork,
 	for (unsigned j = 0; j < neuralNetwork->numberHidden; j++) {
 		double error = 0;
 		for (unsigned k = 0; k < neuralNetwork->numberOutput; k++)
-			error += outputDeltas.elements[k]*
+			error += outputDeltas.elements[k] *
 					 neuralNetwork->weightOutput.elements[j].elements[k];
 		hiddenDeltas.elements[j] =
-			maths_dsigmoid(neuralNetwork->activationHidden.elements[j])*error;
+			maths_dsigmoid(neuralNetwork->activationHidden.elements[j]) * error;
 	}
 
 	// Update output weights
 	for (unsigned j = 0; j < neuralNetwork->numberHidden; j++)
 		for (unsigned k = 0; k < neuralNetwork->numberOutput; k++) {
-			double change = outputDeltas.elements[k]*
+			double change = outputDeltas.elements[k] *
 							neuralNetwork->activationHidden.elements[j];
 			neuralNetwork->weightOutput.elements[j].elements[k] +=
-				(learningRate*change) +
-				(momentumFactor*
+				(learningRate * change) +
+				(momentumFactor *
 				 neuralNetwork->changeOutput.elements[j].elements[k]);
 			neuralNetwork->changeOutput.elements[j].elements[k] = change;
 		}
@@ -133,11 +133,11 @@ double NeuralNetwork_backPropagate(struct NeuralNetwork *neuralNetwork,
 	// Update input weights
 	for (unsigned i = 0; i < neuralNetwork->numberInput; i++)
 		for (unsigned j = 0; j < neuralNetwork->numberHidden; j++) {
-			double change = hiddenDeltas.elements[j]*
+			double change = hiddenDeltas.elements[j] *
 							neuralNetwork->activationInput.elements[i];
 			neuralNetwork->weightInput.elements[i].elements[j] +=
-				(learningRate*change) +
-				(momentumFactor*
+				(learningRate * change) +
+				(momentumFactor *
 				 neuralNetwork->changeInput.elements[i].elements[j]);
 			neuralNetwork->changeInput.elements[i].elements[j] = change;
 		}
@@ -145,7 +145,7 @@ double NeuralNetwork_backPropagate(struct NeuralNetwork *neuralNetwork,
 	// Calculate error
 	double error = 0;
 	for (unsigned k = 0; k < neuralNetwork->numberOutput; k++)
-		error += 0.5*pow(targets.elements[k] -
+		error += 0.5 * pow(targets.elements[k] -
 							   neuralNetwork->activationOutput.elements[k],
 						   2);
 
@@ -201,7 +201,7 @@ void NeuralNetwork_loadWeightInput(struct NeuralNetwork *neuralNetwork,
 			while (serialized[pos] != ';')
 				pos++;
 			pos++;
-			char *coef = malloc(10*sizeof (char));
+			char *coef = malloc(10 * sizeof(char));
 			strncpy(coef, &serialized[start], pos - start - 1);
 
 			// We actually don't need to really check for anything
@@ -221,7 +221,7 @@ void NeuralNetwork_loadWeightOutput(struct NeuralNetwork *neuralNetwork,
 			while (serialized[pos] != ';')
 				pos++;
 			pos++;
-			char *coef = malloc(10*sizeof (char));
+			char *coef = malloc(10 * sizeof(char));
 			strncpy(coef, &serialized[start], pos - start - 1);
 
 			// We actually don't need to really check for anything
@@ -234,13 +234,13 @@ void NeuralNetwork_loadWeightOutput(struct NeuralNetwork *neuralNetwork,
 
 char *NeuralNetwork_serializeWeightsInput(struct NeuralNetwork *neuralNetwork)
 {
-	char *serialized = malloc(1*sizeof (char));
+	char *serialized = malloc(1 * sizeof(char));
 	unsigned curSize = 1;
 
 	for (unsigned i = 0; i < neuralNetwork->numberInput; i++)
 		for (unsigned j = 0; j < neuralNetwork->numberHidden; j++) {
 			curSize += 10;
-			serialized = realloc(serialized, curSize*sizeof (char));
+			serialized = realloc(serialized, curSize * sizeof(char));
 			char s[10];
 			sprintf(s, "%.6f",
 					neuralNetwork->weightInput.elements[i].elements[j]);
@@ -252,13 +252,13 @@ char *NeuralNetwork_serializeWeightsInput(struct NeuralNetwork *neuralNetwork)
 }
 char *NeuralNetwork_serializeWeightsOutput(struct NeuralNetwork *neuralNetwork)
 {
-	char *serialized = malloc(1*sizeof (char));
+	char *serialized = malloc(1 * sizeof(char));
 	unsigned curSize = 1;
 
 	for (unsigned j = 0; j < neuralNetwork->numberHidden; j++)
 		for (unsigned k = 0; k < neuralNetwork->numberOutput; k++) {
 			curSize += 10;
-			serialized = realloc(serialized, curSize*sizeof (char));
+			serialized = realloc(serialized, curSize * sizeof(char));
 			char s[10];
 			sprintf(s, "%.6f",
 					neuralNetwork->weightOutput.elements[j].elements[k]);

@@ -55,16 +55,13 @@ int startNeuralNetwork()
 
 int startNeuralNetworkChar()
 {
-	SDL_Surface *surface = image_load("data/text/abcd.bmp");
-	char characters[4] = {
-		'a',
-		'b',
-		'c',
-		'd'
-	};
+	SDL_Surface *surface = image_load("data/text/caps.bmp");
+	char characters[26] = {
+		'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M',
+		'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'};
 
 	struct charRecognitionList *charRecog = charRecognition_learn(surface,
-		characters, 4);
+		characters, 26);
 
 	ImageLineArray imageLine = charDetection_go(surface);
 	printf("Recognized string: \n");
