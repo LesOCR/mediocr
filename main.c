@@ -2,7 +2,8 @@
 #include <stdlib.h>
 #include <err.h>
 #include <time.h>
-#include "SDL/SDL.h"
+#include <SDL/SDL.h>
+#include <unistd.h>
 
 #include "utils/neuralNetwork/neuralNetwork.h"
 #include "utils/neuralNetwork/charRecognition.h"
@@ -53,16 +54,15 @@ int startNeuralNetwork()
 	return 1;
 }
 
-int startNeuralNetworkChar()
+int startNeuralNetworkChar(char *charsInput, char *characters, char *read)
 {
-	SDL_Surface *surface = image_load("data/text/caps.bmp");
-	char characters[26] = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+	SDL_Surface *surface = image_load(charsInput);
 
 	struct charRecognitionList *charRecog = charRecognition_learn(surface,
-		characters, 26);
+		characters, strlen(characters));
 
 
-	SDL_Surface *text = image_load("data/text/awesome.bmp");
+	SDL_Surface *text = image_load(read);
 	ImageLineArray imageLine = charDetection_go(text);
 	printf("Recognized string: \n");
 	for(unsigned i = 0; i < imageLine.size; i++) {
@@ -94,9 +94,46 @@ int startImageProcessing()
 	return 1;
 }
 
+void outputHelp()
+{
+	printf("----------------------------- MediOCR ----------------------------------\n");
+	printf(" Authors: Manuel HUEZ, Louis-Paul DAREAU, Erenus DERMANCI, Cyril CHEMLA\n");
+	printf(" Version: 1.0.0.0\n\n");
+	printf(" Options:\n");
+	printf(" -f: Path of the file that needs to be processed.\n");
+	printf(" -c: Path of the file used by the neural network to learn.\n");
+	printf(" -s: String containing the chars in the file used to learn.\n");
+	printf("------------------------------------------------------------------------\n");
+
+	exit(EXIT_FAILURE);
+}
+
 int main(int argc, char *argv[])
 {
-	printf("MediOCR started! \n");
+	int c;
+	char *filePath = "data/text/awesome.bmp";
+	char *charPath = "data/text/caps.bmp";
+	char *charList = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+
+	while ((c = getopt(argc, argv, "f:c:s:h")) != -1) {
+		switch(c)
+		{
+		case 'f':
+			filePath = optarg;
+			break;
+		case 'c':
+			charPath = optarg;
+			break;
+		case 's':
+			charList = optarg;
+			break;
+		case 'h':
+			outputHelp();
+			break;
+		default:
+			outputHelp();
+		}
+	}
 
 	if (!setup())
 		err(1, "Error during the initial setup.");
@@ -107,7 +144,7 @@ int main(int argc, char *argv[])
 	// if(!startImageProcessing())
 	// 	err(1, "Error during the image processing.");
 
-	if (!startNeuralNetworkChar())
+	if (!startNeuralNetworkChar(charPath, charList, filePath))
 		err(1, "Error during the real neural network instance");
 
 	printf("MediOCR ended! \n");
