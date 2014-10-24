@@ -1,4 +1,3 @@
-
 #include <stdio.h>
 #include <err.h>
 #include <assert.h>
@@ -21,94 +20,93 @@ SDL_Surface *image_load(char *path)
 
 SDL_Surface *image_scale(SDL_Surface *Surface, Uint16 Width, Uint16 Height)
 {
-	if(!Surface || !Width || !Height)
+	if (!Surface || !Width || !Height)
 		return 0;
 
-	SDL_Surface *_ret = SDL_CreateRGBSurface(Surface->flags, Width, Height,
-		Surface->format->BitsPerPixel, Surface->format->Rmask,
-		Surface->format->Gmask, Surface->format->Bmask, Surface->format->Amask);
+	SDL_Surface *_ret = SDL_CreateRGBSurface(
+		Surface->flags, Width, Height, Surface->format->BitsPerPixel,
+		Surface->format->Rmask, Surface->format->Gmask, Surface->format->Bmask,
+		Surface->format->Amask);
 
 	double _stretch_factor_x = ((double)Width) / ((double)Surface->w);
 	double _stretch_factor_y = ((double)Height) / ((double)Surface->h);
 
-	for(Sint32 y = 0; y < Surface->h; y++)
-		for(Sint32 x = 0; x < Surface->w; x++)
-			for(Sint32 o_y = 0; o_y < _stretch_factor_y; ++o_y)
-				for(Sint32 o_x = 0; o_x < _stretch_factor_x; ++o_x)
+	for (Sint32 y = 0; y < Surface->h; y++)
+		for (Sint32 x = 0; x < Surface->w; x++)
+			for (Sint32 o_y = 0; o_y < _stretch_factor_y; ++o_y)
+				for (Sint32 o_x = 0; o_x < _stretch_factor_x; ++o_x)
 					image_putPixel(_ret, (_stretch_factor_x * x) + o_x,
-						(_stretch_factor_y * y) + o_y,
-						image_getPixelUint32(Surface, x, y));
+								   (_stretch_factor_y * y) + o_y,
+								   image_getPixelUint32(Surface, x, y));
 	return _ret;
 }
 
-SDL_Surface *image_extractChar(SDL_Surface *surface, struct ImageChar *c) {
+SDL_Surface *image_extractChar(SDL_Surface *surface, struct ImageChar *c)
+{
 	int w = c->endX - c->startX;
 	int h = c->endY - c->startY;
 
-	SDL_Surface *newSurface = SDL_CreateRGBSurface(surface->flags, w, h,
-		surface->format->BitsPerPixel, surface->format->Rmask,
-		surface->format->Gmask, surface->format->Bmask, surface->format->Amask);
+	SDL_Surface *newSurface = SDL_CreateRGBSurface(
+		surface->flags, w, h, surface->format->BitsPerPixel,
+		surface->format->Rmask, surface->format->Gmask, surface->format->Bmask,
+		surface->format->Amask);
 
-	SDL_Rect rectMask = {
-		.x = (Sint16)c->startX,
-		.y = (Sint16)c->startY,
-		.w = (Sint16)w,
-		.h = (Sint16)h
-	};
+	SDL_Rect rectMask = {.x = (Sint16)c->startX,
+						 .y = (Sint16)c->startY,
+						 .w = (Sint16)w,
+						 .h = (Sint16)h};
 
 	int r = SDL_BlitSurface(surface, &rectMask, newSurface, NULL);
-	if (r) {
+	if (r)
 		return 0;
-	}
 
 	return newSurface;
 }
 
-SDL_Color image_getPixelColor(SDL_Surface *surface, unsigned x,
-	unsigned y)
+SDL_Color image_getPixelColor(SDL_Surface *surface, unsigned x, unsigned y)
 {
 	Uint32 intColor = image_getPixelUint32(surface, x, y);
-	#if SDL_BYTEORDER == SDL_BIG_ENDIAN
-	    SDL_Color color={(intColor & 0x00ff0000) / 0x10000, (intColor &
-			0x0000ff00) / 0x100,(intColor & 0x000000ff), 0};
-	#else
-	    SDL_Color color={(intColor & 0x000000ff), (intColor &
-			0x0000ff00) / 0x100,(intColor & 0x00ff0000) / 0x10000,0};
-	#endif
+#if SDL_BYTEORDER == SDL_BIG_ENDIAN
+	SDL_Color color = {(intColor & 0x00ff0000) / 0x10000,
+					   (intColor & 0x0000ff00) / 0x100, (intColor & 0x000000ff),
+					   0};
+#else
+	SDL_Color color = {(intColor & 0x000000ff), (intColor & 0x0000ff00) / 0x100,
+					   (intColor & 0x00ff0000) / 0x10000, 0};
+#endif
 
 	return color;
 }
 
-Uint32 image_getPixelUint32(SDL_Surface *surface, unsigned x,
-	unsigned y)
+Uint32 image_getPixelUint32(SDL_Surface *surface, unsigned x, unsigned y)
 {
-	Uint8 *p = (Uint8 *)surface->pixels + y * surface->pitch
-	         + x * surface->format->BytesPerPixel;
+	Uint8 *p = (Uint8 *)surface->pixels + y * surface->pitch +
+			   x * surface->format->BytesPerPixel;
 
-	switch(surface->format->BytesPerPixel) {
+	switch (surface->format->BytesPerPixel) {
 	case 1:
-	    return *p;
-	    break;
+		return *p;
+		break;
 
 	case 2:
-	    return *(Uint16 *)p;
-	    break;
+		return *(Uint16 *)p;
+		break;
 
 	case 3:
 #if SDL_BYTEORDER == SDL_BIG_ENDIAN //
-	    return p[0] << 16 | p[1] << 8 | p[2];
-#else //
-	    return p[0] | p[1] << 8 | p[2] << 16;
+		return p[0] << 16 | p[1] << 8 | p[2];
+#else  //
+		return p[0] | p[1] << 8 | p[2] << 16;
 #endif //
-	    break;
+		break;
 
 	case 4:
-	    return *(Uint32 *)p;
-	    break;
+		return *(Uint32 *)p;
+		break;
 
 	default:
-	    return 0;
-	    break; //
+		return 0;
+		break; //
 	}
 }
 
@@ -122,22 +120,21 @@ double image_getGreyscaleRatio(SDL_Color color)
 	return image_getGreyscale(color) / 255;
 }
 
-unsigned image_getPixelBool(SDL_Surface *surface, unsigned x,
-	unsigned y)
+unsigned image_getPixelBool(SDL_Surface *surface, unsigned x, unsigned y)
 {
 	return image_getGreyscaleRatio(image_getPixelColor(surface, x, y)) < 0.5;
 }
 
-static inline
-Uint8* pixelref(SDL_Surface *surf, unsigned x, unsigned y) {
-  int bpp = surf->format->BytesPerPixel;
-  return (Uint8*)surf->pixels + y * surf->pitch + x * bpp;
+static inline Uint8 *pixelref(SDL_Surface *surf, unsigned x, unsigned y)
+{
+	int bpp = surf->format->BytesPerPixel;
+	return (Uint8 *)surf->pixels + y * surf->pitch + x * bpp;
 }
 
-void image_putPixel(SDL_Surface *surface, unsigned x, unsigned y,
-	Uint32 pixel) {
+void image_putPixel(SDL_Surface *surface, unsigned x, unsigned y, Uint32 pixel)
+{
 	Uint8 *p = pixelref(surface, x, y);
-	switch(surface->format->BytesPerPixel) {
+	switch (surface->format->BytesPerPixel) {
 	case 1:
 		*p = pixel;
 		break;
@@ -145,7 +142,7 @@ void image_putPixel(SDL_Surface *surface, unsigned x, unsigned y,
 		*(Uint16 *)p = pixel;
 		break;
 	case 3:
-		if(SDL_BYTEORDER == SDL_BIG_ENDIAN) {
+		if (SDL_BYTEORDER == SDL_BIG_ENDIAN) {
 			p[0] = (pixel >> 16) & 0xff;
 			p[1] = (pixel >> 8) & 0xff;
 			p[2] = pixel & 0xff;
@@ -162,20 +159,14 @@ void image_putPixel(SDL_Surface *surface, unsigned x, unsigned y,
 }
 
 void image_renderConsoleFromTo(SDL_Surface *surface, unsigned x1, unsigned y1,
- 	unsigned x2, unsigned y2)
+							   unsigned x2, unsigned y2)
 {
-	for(unsigned y = y1; y < y2; y++)
-	{
-		for(unsigned x = x1; x < x2; x++)
-		{
-			if(image_getPixelBool(surface, x, y))
-			{
+	for (unsigned y = y1; y < y2; y++) {
+		for (unsigned x = x1; x < x2; x++) {
+			if (image_getPixelBool(surface, x, y))
 				printf("█");
-			}
 			else
-			{
 				printf(" ");
-			}
 		}
 		printf("\n");
 	}
@@ -187,15 +178,15 @@ void image_renderConsole(SDL_Surface *surface)
 }
 
 void image_renderConsoleFromLine(SDL_Surface *surface,
-	struct ImageLine imageLine)
+								 struct ImageLine imageLine)
 {
-	image_renderConsoleFromTo(surface, imageLine.startX,
-		imageLine.startY, imageLine.endX, imageLine.endY);
+	image_renderConsoleFromTo(surface, imageLine.startX, imageLine.startY,
+							  imageLine.endX, imageLine.endY);
 }
 
 void image_renderConsoleFromChar(SDL_Surface *surface,
-	struct ImageChar imageChar)
+								 struct ImageChar imageChar)
 {
-	image_renderConsoleFromTo(surface, imageChar.startX,
-		imageChar.startY, imageChar.endX, imageChar.endY);
+	image_renderConsoleFromTo(surface, imageChar.startX, imageChar.startY,
+							  imageChar.endX, imageChar.endY);
 }

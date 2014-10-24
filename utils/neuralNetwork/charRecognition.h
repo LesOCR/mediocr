@@ -1,4 +1,3 @@
-
 #include <stddef.h>
 #include <SDL/SDL.h>
 
@@ -7,21 +6,19 @@
 #ifndef UTILS_NEURALNETWORK_CHARRECOGNITION_
 #define UTILS_NEURALNETWORK_CHARRECOGNITION_
 
-struct charRecognition
-{
+struct charRecognition {
 	char letter;
 	struct NeuralNetwork *network;
 };
 
-struct charRecognitionList
-{
+struct charRecognitionList {
 	struct charRecognition *current;
 	struct charRecognitionList *next;
 };
 
 struct charRecognitionList *charRecognition_learn(SDL_Surface *surface,
-	char chars[], size_t size);
+												  char chars[], size_t size);
 char charRecognition_getChar(struct charRecognitionList *list,
-	SDL_Surface *surface);
+							 SDL_Surface *surface);
 
 #endif

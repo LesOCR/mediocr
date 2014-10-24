@@ -1,4 +1,3 @@
-
 #include <SDL/SDL.h>
 #include <math.h>
 
@@ -8,7 +7,7 @@
 #include "charRecognition.h"
 
 struct charRecognitionList *charRecognition_learn(SDL_Surface *surface,
-	char chars[], size_t size)
+												  char chars[], size_t size)
 {
 	struct charRecognitionList *charRegList =
 		malloc(sizeof(struct charRecognitionList));
@@ -47,10 +46,10 @@ struct charRecognitionList *charRecognition_learn(SDL_Surface *surface,
 
 		NeuralNetwork_train(myNeuralNetwork, input, output, 0.001, 0.1, 0);
 
-
-		struct charRecognition *charReg = malloc(sizeof(struct charRecognition));
+		struct charRecognition *charReg =
+			malloc(sizeof(struct charRecognition));
 		charReg->network = myNeuralNetwork;
-		charReg->letter  = chars[h];
+		charReg->letter = chars[h];
 
 		charRegList->current = charReg;
 
@@ -68,31 +67,25 @@ struct charRecognitionList *charRecognition_learn(SDL_Surface *surface,
 }
 
 char charRecognition_getChar(struct charRecognitionList *list,
-	SDL_Surface *surface)
+							SDL_Surface *surface)
 {
 	unsignedArray input  = new_unsignedArray(256);
 
-	for(unsigned k = 0; k < 16; k++)
-	{
-		for(unsigned l = 0; l < 16; l++)
-		{
-			input.elements[k + l * 16] =
-				image_getPixelBool(surface, k, l);
-		}
-	}
+	for (unsigned k = 0; k < 16; k++)
+		for (unsigned l = 0; l < 16; l++)
+			input.elements[k + l * 16] = image_getPixelBool(surface, k, l);
 
 	double bestRatio = 0;
 	char   bestChar = '\0';
 
-	while(list->next != NULL)
-	{
+	while (list->next != NULL) {
 		doubleArray ratio =
 			NeuralNetwork_testDouble(list->current->network, input);
 
 		if(fabs(ratio.elements[0]) > bestRatio)
 		{
 			bestRatio = fabs(ratio.elements[0]);
-			bestChar  = list->current->letter;
+			bestChar = list->current->letter;
 		}
 
 		list = list->next;

@@ -1,4 +1,3 @@
-
 #include "../types/arrays.h"
 
 #ifndef UTILS_HELPERS_MATHS_
