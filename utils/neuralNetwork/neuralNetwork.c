@@ -153,12 +153,13 @@ double NeuralNetwork_backPropagate(struct NeuralNetwork *neuralNetwork,
 }
 
 void NeuralNetwork_train(struct NeuralNetwork *neuralNetwork,
-						 unsignedArray2D input, unsignedArray2D output,
-						 unsigned iterations, double learningRate,
-						 double momentumFactor)
+						unsignedArray2D input, unsignedArray2D output,
+						double threshold, double learningRate,
+						double momentumFactor)
 {
 	double error = 0;
-	for (unsigned i = 0; i < iterations; i++) {
+	do
+	{
 		error = 0;
 
 		for (unsigned j = 0; j < input.sizeX; j++) {
@@ -167,9 +168,9 @@ void NeuralNetwork_train(struct NeuralNetwork *neuralNetwork,
 				NeuralNetwork_backPropagate(neuralNetwork, output.elements[j],
 											learningRate, momentumFactor);
 		}
-	}
+	} while(fabs(error) > threshold);
 
-	printf("Error percentage: %f\n", error * 100);
+	printf("Final error ratio: %g\n", error);
 }
 
 void NeuralNetwork_test(struct NeuralNetwork *neuralNetwork,
@@ -203,7 +204,7 @@ void NeuralNetwork_loadWeightInput(struct NeuralNetwork *neuralNetwork,
 			char *coef = malloc(10 * sizeof(char));
 			strncpy(coef, &serialized[start], pos - start - 1);
 
-			// We actually don't nede to really check for anything
+			// We actually don't need to really check for anything
 			// when adding the value to our weights, as we
 			// assume the user is importing correctly serialized
 			// weights.
@@ -223,7 +224,7 @@ void NeuralNetwork_loadWeightOutput(struct NeuralNetwork *neuralNetwork,
 			char *coef = malloc(10 * sizeof(char));
 			strncpy(coef, &serialized[start], pos - start - 1);
 
-			// We actually don't nede to really check for anything
+			// We actually don't need to really check for anything
 			// when adding the value to our weights, as we
 			// assume the user is importing correctly serialized
 			// weights.
