@@ -79,9 +79,9 @@ int startNeuralNetworkChar(char *charsInput, char *characters, char *read)
 	return 1;
 }
 
-int startImageProcessing()
+int startImageProcessing(char *path)
 {
-	SDL_Surface *surface = image_load("data/text/3lines.bmp");
+	SDL_Surface *surface = image_load(path);
 	ImageLineArray imageLine = charDetection_go(surface);
 
 	for (unsigned i = 0; i < imageLine.size; i++)
@@ -115,7 +115,7 @@ int main(int argc, char *argv[])
 {
 	int c;
 	char *mode     = "live";
-	char *filePath = "data/text/awesome.bmp";
+	char *filePath = NULL;
 	char *charPath = "data/text/caps.bmp";
 	char *charList = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 
@@ -147,10 +147,16 @@ int main(int argc, char *argv[])
 			err(1, "Error during the neural network instance.");
 	}
 	else if(strcmp(mode, "chardetection") == 0) {
-		if(!startImageProcessing())
+		if(filePath == NULL)
+			filePath = "data/text/3lines.bmp";
+
+		if(!startImageProcessing(filePath))
 			err(1, "Error during the image processing.");
 	}
 	else {
+		if(filePath == NULL)
+			filePath = "data/text/awesome.bmp";
+
 		if (!startNeuralNetworkChar(charPath, charList, filePath))
 			err(1, "Error during the real neural network instance");
 	}
