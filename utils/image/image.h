@@ -18,11 +18,11 @@ unsigned image_getPixelBool(SDL_Surface *surface, unsigned x, unsigned y);
 void image_putPixel(SDL_Surface *surface, unsigned x, unsigned y, Uint32 pixel);
 
 void image_renderConsoleFromTo(SDL_Surface *surface, unsigned x1, unsigned y1,
-							   unsigned x2, unsigned y2);
+			       unsigned x2, unsigned y2);
 void image_renderConsole(SDL_Surface *surface);
 void image_renderConsoleFromLine(SDL_Surface *surface,
-								 struct ImageLine imageLine);
+				 struct ImageLine imageLine);
 void image_renderConsoleFromChar(SDL_Surface *surface,
-								 struct ImageChar imageChar);
+				 struct ImageChar imageChar);
 
 #endif

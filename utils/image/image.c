@@ -24,9 +24,9 @@ SDL_Surface *image_scale(SDL_Surface *Surface, Uint16 Width, Uint16 Height)
 		return 0;
 
 	SDL_Surface *_ret = SDL_CreateRGBSurface(
-		Surface->flags, Width, Height, Surface->format->BitsPerPixel,
-		Surface->format->Rmask, Surface->format->Gmask, Surface->format->Bmask,
-		Surface->format->Amask);
+	    Surface->flags, Width, Height, Surface->format->BitsPerPixel,
+	    Surface->format->Rmask, Surface->format->Gmask,
+	    Surface->format->Bmask, Surface->format->Amask);
 
 	double _stretch_factor_x = ((double)Width) / ((double)Surface->w);
 	double _stretch_factor_y = ((double)Height) / ((double)Surface->h);
@@ -34,10 +34,13 @@ SDL_Surface *image_scale(SDL_Surface *Surface, Uint16 Width, Uint16 Height)
 	for (Sint32 y = 0; y < Surface->h; y++)
 		for (Sint32 x = 0; x < Surface->w; x++)
 			for (Sint32 o_y = 0; o_y < _stretch_factor_y; ++o_y)
-				for (Sint32 o_x = 0; o_x < _stretch_factor_x; ++o_x)
-					image_putPixel(_ret, (_stretch_factor_x * x) + o_x,
-								   (_stretch_factor_y * y) + o_y,
-								   image_getPixelUint32(Surface, x, y));
+				for (Sint32 o_x = 0; o_x < _stretch_factor_x;
+				     ++o_x)
+					image_putPixel(
+					    _ret, (_stretch_factor_x * x) + o_x,
+					    (_stretch_factor_y * y) + o_y,
+					    image_getPixelUint32(Surface, x,
+								 y));
 	return _ret;
 }
 
@@ -47,14 +50,14 @@ SDL_Surface *image_extractChar(SDL_Surface *surface, struct ImageChar *c)
 	int h = c->endY - c->startY;
 
 	SDL_Surface *newSurface = SDL_CreateRGBSurface(
-		surface->flags, w, h, surface->format->BitsPerPixel,
-		surface->format->Rmask, surface->format->Gmask, surface->format->Bmask,
-		surface->format->Amask);
+	    surface->flags, w, h, surface->format->BitsPerPixel,
+	    surface->format->Rmask, surface->format->Gmask,
+	    surface->format->Bmask, surface->format->Amask);
 
 	SDL_Rect rectMask = {.x = (Sint16)c->startX,
-						 .y = (Sint16)c->startY,
-						 .w = (Sint16)w,
-						 .h = (Sint16)h};
+			     .y = (Sint16)c->startY,
+			     .w = (Sint16)w,
+			     .h = (Sint16)h};
 
 	int r = SDL_BlitSurface(surface, &rectMask, newSurface, NULL);
 	if (r)
@@ -68,11 +71,12 @@ SDL_Color image_getPixelColor(SDL_Surface *surface, unsigned x, unsigned y)
 	Uint32 intColor = image_getPixelUint32(surface, x, y);
 #if SDL_BYTEORDER == SDL_BIG_ENDIAN
 	SDL_Color color = {(intColor & 0x00ff0000) / 0x10000,
-					   (intColor & 0x0000ff00) / 0x100, (intColor & 0x000000ff),
-					   0};
+			   (intColor & 0x0000ff00) / 0x100,
+			   (intColor & 0x000000ff), 0};
 #else
-	SDL_Color color = {(intColor & 0x000000ff), (intColor & 0x0000ff00) / 0x100,
-					   (intColor & 0x00ff0000) / 0x10000, 0};
+	SDL_Color color = {(intColor & 0x000000ff),
+			   (intColor & 0x0000ff00) / 0x100,
+			   (intColor & 0x00ff0000) / 0x10000, 0};
 #endif
 
 	return color;
@@ -81,7 +85,7 @@ SDL_Color image_getPixelColor(SDL_Surface *surface, unsigned x, unsigned y)
 Uint32 image_getPixelUint32(SDL_Surface *surface, unsigned x, unsigned y)
 {
 	Uint8 *p = (Uint8 *)surface->pixels + y * surface->pitch +
-			   x * surface->format->BytesPerPixel;
+		   x * surface->format->BytesPerPixel;
 
 	switch (surface->format->BytesPerPixel) {
 	case 1:
@@ -122,7 +126,8 @@ double image_getGreyscaleRatio(SDL_Color color)
 
 unsigned image_getPixelBool(SDL_Surface *surface, unsigned x, unsigned y)
 {
-	return image_getGreyscaleRatio(image_getPixelColor(surface, x, y)) < 0.5;
+	return image_getGreyscaleRatio(image_getPixelColor(surface, x, y)) <
+	       0.5;
 }
 
 static inline Uint8 *pixelref(SDL_Surface *surf, unsigned x, unsigned y)
@@ -159,7 +164,7 @@ void image_putPixel(SDL_Surface *surface, unsigned x, unsigned y, Uint32 pixel)
 }
 
 void image_renderConsoleFromTo(SDL_Surface *surface, unsigned x1, unsigned y1,
-							   unsigned x2, unsigned y2)
+			       unsigned x2, unsigned y2)
 {
 	for (unsigned y = y1; y < y2; y++) {
 		for (unsigned x = x1; x < x2; x++) {
@@ -178,15 +183,15 @@ void image_renderConsole(SDL_Surface *surface)
 }
 
 void image_renderConsoleFromLine(SDL_Surface *surface,
-								 struct ImageLine imageLine)
+				 struct ImageLine imageLine)
 {
 	image_renderConsoleFromTo(surface, imageLine.startX, imageLine.startY,
-							  imageLine.endX, imageLine.endY);
+				  imageLine.endX, imageLine.endY);
 }
 
 void image_renderConsoleFromChar(SDL_Surface *surface,
-								 struct ImageChar imageChar)
+				 struct ImageChar imageChar)
 {
 	image_renderConsoleFromTo(surface, imageChar.startX, imageChar.startY,
-							  imageChar.endX, imageChar.endY);
+				  imageChar.endX, imageChar.endY);
 }

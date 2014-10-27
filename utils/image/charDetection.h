@@ -23,9 +23,9 @@ struct ImageLine {
 };
 
 unsigned charDetection_line(SDL_Surface *surface, struct ImageLine *imageLine,
-							unsigned startY);
+			    unsigned startY);
 unsigned charDetection_char(SDL_Surface *surface, struct ImageLine imageLine,
-							struct ImageChar *imageChar, unsigned startX);
+			    struct ImageChar *imageChar, unsigned startX);
 ImageLineArray charDetection_go(SDL_Surface *surface);
 
 #endif

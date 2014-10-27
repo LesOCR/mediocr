@@ -44,8 +44,10 @@ int startNeuralNetwork()
 
 	NeuralNetwork_test(myNeuralNetwork, input);
 
-	char *serializedInput = NeuralNetwork_serializeWeightsInput(myNeuralNetwork);
-	char *serializedOutput = NeuralNetwork_serializeWeightsOutput(myNeuralNetwork);
+	char *serializedInput =
+	    NeuralNetwork_serializeWeightsInput(myNeuralNetwork);
+	char *serializedOutput =
+	    NeuralNetwork_serializeWeightsOutput(myNeuralNetwork);
 	printf("Serialized input weights: \n%s\n", serializedInput);
 	printf("Serialized output weights: \n%s\n", serializedOutput);
 	printf("Unserializing:\n");
@@ -59,17 +61,19 @@ int startNeuralNetworkChar(char *charsInput, char *characters, char *read)
 {
 	SDL_Surface *surface = image_load(charsInput);
 
-	struct charRecognitionList *charRecog = charRecognition_learn(surface,
-		characters, strlen(characters));
-
+	struct charRecognitionList *charRecog =
+	    charRecognition_learn(surface, characters, strlen(characters));
 
 	SDL_Surface *text = image_load(read);
 	ImageLineArray imageLine = charDetection_go(text);
 	printf("Recognized string: \n");
-	for(unsigned i = 0; i < imageLine.size; i++) {
-		for(unsigned j = 0; j < imageLine.elements[i].chars.size; j++) {
-			SDL_Surface *s = image_scale(image_extractChar(text,
-					&imageLine.elements[i].chars.elements[j]), 16, 16);
+	for (unsigned i = 0; i < imageLine.size; i++) {
+		for (unsigned j = 0; j < imageLine.elements[i].chars.size;
+		     j++) {
+			SDL_Surface *s = image_scale(
+			    image_extractChar(
+				text, &imageLine.elements[i].chars.elements[j]),
+			    16, 16);
 
 			printf("%c", charRecognition_getChar(charRecog, s));
 		}
@@ -85,9 +89,10 @@ int startImageProcessing(char *path)
 	ImageLineArray imageLine = charDetection_go(surface);
 
 	for (unsigned i = 0; i < imageLine.size; i++)
-		for (unsigned j = 0; j < imageLine.elements[i].chars.size; j++) {
+		for (unsigned j = 0; j < imageLine.elements[i].chars.size;
+		     j++) {
 			SDL_Surface *s = image_extractChar(
-				surface, &imageLine.elements[i].chars.elements[j]);
+			    surface, &imageLine.elements[i].chars.elements[j]);
 			image_renderConsole(image_scale(s, 16, 16));
 			printf("\n");
 		}
@@ -97,8 +102,10 @@ int startImageProcessing(char *path)
 
 void outputHelp()
 {
-	printf("----------------------------- MediOCR ----------------------------------\n");
-	printf(" Authors: Manuel HUEZ, Louis-Paul DAREAU, Erenus DERMANCI, Cyril CHEMLA\n");
+	printf("----------------------------- MediOCR "
+	       "----------------------------------\n");
+	printf(" Authors: Manuel HUEZ, Louis-Paul DAREAU, Erenus DERMANCI, "
+	       "Cyril CHEMLA\n");
 	printf(" Version: 1.0.0.0\n\n");
 	printf(" Options:\n");
 	printf(" -m: Mode: [live|neuralnetwork|chardetection]\n");
@@ -106,7 +113,8 @@ void outputHelp()
 	printf(" -c: Path of the file used by the neural network to learn.\n");
 	printf(" -s: String containing the chars in the file used to learn.\n");
 	printf(" -h: Show this wonderful help.\n");
-	printf("------------------------------------------------------------------------\n");
+	printf("---------------------------------------------------------------"
+	       "---------\n");
 
 	exit(EXIT_FAILURE);
 }
@@ -114,13 +122,13 @@ void outputHelp()
 int main(int argc, char *argv[])
 {
 	int c;
-	char *mode     = "live";
+	char *mode = "live";
 	char *filePath = NULL;
 	char *charPath = "data/text/caps.bmp";
 	char *charList = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 
 	while ((c = getopt(argc, argv, "m:f:c:s:h")) != -1) {
-		switch(c) {
+		switch (c) {
 		case 'm':
 			mode = optarg;
 			break;
@@ -142,19 +150,17 @@ int main(int argc, char *argv[])
 	if (!setup())
 		err(1, "Error during the initial setup.");
 
-	if(strcmp(mode, "neuralnetwork") == 0) {
-		if(!startNeuralNetwork())
+	if (strcmp(mode, "neuralnetwork") == 0) {
+		if (!startNeuralNetwork())
 			err(1, "Error during the neural network instance.");
-	}
-	else if(strcmp(mode, "chardetection") == 0) {
-		if(filePath == NULL)
+	} else if (strcmp(mode, "chardetection") == 0) {
+		if (filePath == NULL)
 			filePath = "data/text/3lines.bmp";
 
-		if(!startImageProcessing(filePath))
+		if (!startImageProcessing(filePath))
 			err(1, "Error during the image processing.");
-	}
-	else {
-		if(filePath == NULL)
+	} else {
+		if (filePath == NULL)
 			filePath = "data/text/awesome.bmp";
 
 		if (!startNeuralNetworkChar(charPath, charList, filePath))

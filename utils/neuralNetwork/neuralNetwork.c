@@ -13,7 +13,7 @@ struct NeuralNetwork *neuralNetwork_main(unsigned ni, unsigned nh, unsigned no)
 
 	// Initialize our structure
 	struct NeuralNetwork *myNeuralNetwork =
-		malloc(sizeof (struct NeuralNetwork));
+	    malloc(sizeof(struct NeuralNetwork));
 
 	// Initialize values of our structure
 	myNeuralNetwork->numberInput = ++ni; // + 1 for bias node
@@ -22,11 +22,11 @@ struct NeuralNetwork *neuralNetwork_main(unsigned ni, unsigned nh, unsigned no)
 
 	// Activations for nodes
 	myNeuralNetwork->activationInput =
-		new_doubleArray(myNeuralNetwork->numberInput);
+	    new_doubleArray(myNeuralNetwork->numberInput);
 	myNeuralNetwork->activationHidden =
-		new_doubleArray(myNeuralNetwork->numberHidden);
+	    new_doubleArray(myNeuralNetwork->numberHidden);
 	myNeuralNetwork->activationOutput =
-		new_doubleArray(myNeuralNetwork->numberOutput);
+	    new_doubleArray(myNeuralNetwork->numberOutput);
 
 	// Fill them with their default values
 	fill_doubleArray(myNeuralNetwork->activationInput, 1);
@@ -35,35 +35,35 @@ struct NeuralNetwork *neuralNetwork_main(unsigned ni, unsigned nh, unsigned no)
 
 	// Create weights
 	myNeuralNetwork->weightInput = new_doubleArray2D(
-		myNeuralNetwork->numberInput, myNeuralNetwork->numberHidden);
+	    myNeuralNetwork->numberInput, myNeuralNetwork->numberHidden);
 	myNeuralNetwork->weightOutput = new_doubleArray2D(
-		myNeuralNetwork->numberHidden, myNeuralNetwork->numberOutput);
+	    myNeuralNetwork->numberHidden, myNeuralNetwork->numberOutput);
 
 	// Assign some random values
 	for (unsigned i = 0; i < myNeuralNetwork->numberInput; i++)
 		for (unsigned j = 0; j < myNeuralNetwork->numberHidden; j++)
 			myNeuralNetwork->weightInput.elements[i].elements[j] =
-				maths_rand(-0.2, 0.2);
+			    maths_rand(-0.2, 0.2);
 
 	for (unsigned j = 0; j < myNeuralNetwork->numberHidden; j++)
 		for (unsigned k = 0; k < myNeuralNetwork->numberOutput; k++)
 			myNeuralNetwork->weightOutput.elements[j].elements[k] =
-				maths_rand(-2.0, 2.0);
+			    maths_rand(-2.0, 2.0);
 
 	myNeuralNetwork->changeInput = new_doubleArray2D(
-		myNeuralNetwork->numberInput, myNeuralNetwork->numberHidden);
+	    myNeuralNetwork->numberInput, myNeuralNetwork->numberHidden);
 	myNeuralNetwork->changeOutput = new_doubleArray2D(
-		myNeuralNetwork->numberHidden, myNeuralNetwork->numberOutput);
+	    myNeuralNetwork->numberHidden, myNeuralNetwork->numberOutput);
 
 	return myNeuralNetwork;
 }
 
 doubleArray NeuralNetwork_update(struct NeuralNetwork *neuralNetwork,
-								 unsignedArray input)
+				 unsignedArray input)
 {
 	if (input.sizeX != neuralNetwork->numberInput - 1)
-		err(1, "Wrong number of inputs, %d - expected %d\n", input.sizeX,
-			neuralNetwork->numberInput - 1);
+		err(1, "Wrong number of inputs, %d - expected %d\n",
+		    input.sizeX, neuralNetwork->numberInput - 1);
 
 	// Input activation
 	for (unsigned i = 0; i < neuralNetwork->numberInput - 1; i++)
@@ -73,38 +73,44 @@ doubleArray NeuralNetwork_update(struct NeuralNetwork *neuralNetwork,
 	for (unsigned j = 0; j < neuralNetwork->numberHidden; j++) {
 		double sum = 0;
 		for (unsigned i = 0; i < neuralNetwork->numberInput; i++)
-			sum += neuralNetwork->activationInput.elements[i]*
-				   neuralNetwork->weightInput.elements[i].elements[j];
-		neuralNetwork->activationHidden.elements[j] = maths_sigmoid(sum);
+			sum +=
+			    neuralNetwork->activationInput.elements[i] *
+			    neuralNetwork->weightInput.elements[i].elements[j];
+		neuralNetwork->activationHidden.elements[j] =
+		    maths_sigmoid(sum);
 	}
 
 	// Output activation
 	for (unsigned k = 0; k < neuralNetwork->numberOutput; k++) {
 		double sum = 0;
 		for (unsigned j = 0; j < neuralNetwork->numberHidden; j++)
-			sum += neuralNetwork->activationHidden.elements[j]*
-				   neuralNetwork->weightOutput.elements[j].elements[k];
-		neuralNetwork->activationOutput.elements[k] = maths_sigmoid(sum);
+			sum +=
+			    neuralNetwork->activationHidden.elements[j] *
+			    neuralNetwork->weightOutput.elements[j].elements[k];
+		neuralNetwork->activationOutput.elements[k] =
+		    maths_sigmoid(sum);
 	}
 
 	return neuralNetwork->activationOutput;
 }
 
 double NeuralNetwork_backPropagate(struct NeuralNetwork *neuralNetwork,
-								   unsignedArray targets, double learningRate,
-								   double momentumFactor)
+				   unsignedArray targets, double learningRate,
+				   double momentumFactor)
 {
 	if (targets.sizeX != neuralNetwork->numberOutput)
 		err(1, "Wrong number of target values, %d - expected %d\n",
-			targets.sizeX, neuralNetwork->numberOutput);
+		    targets.sizeX, neuralNetwork->numberOutput);
 
 	// Calculate error terms for output
 	doubleArray outputDeltas = new_doubleArray(neuralNetwork->numberOutput);
 	for (unsigned k = 0; k < neuralNetwork->numberOutput; k++) {
-		double error =
-			targets.elements[k] - neuralNetwork->activationOutput.elements[k];
+		double error = targets.elements[k] -
+			       neuralNetwork->activationOutput.elements[k];
 		outputDeltas.elements[k] =
-			maths_dsigmoid(neuralNetwork->activationOutput.elements[k])*error;
+		    maths_dsigmoid(
+			neuralNetwork->activationOutput.elements[k]) *
+		    error;
 	}
 
 	// Calculate error terms for hidden
@@ -112,87 +118,96 @@ double NeuralNetwork_backPropagate(struct NeuralNetwork *neuralNetwork,
 	for (unsigned j = 0; j < neuralNetwork->numberHidden; j++) {
 		double error = 0;
 		for (unsigned k = 0; k < neuralNetwork->numberOutput; k++)
-			error += outputDeltas.elements[k]*
-					 neuralNetwork->weightOutput.elements[j].elements[k];
+			error +=
+			    outputDeltas.elements[k] *
+			    neuralNetwork->weightOutput.elements[j].elements[k];
 		hiddenDeltas.elements[j] =
-			maths_dsigmoid(neuralNetwork->activationHidden.elements[j])*error;
+		    maths_dsigmoid(
+			neuralNetwork->activationHidden.elements[j]) *
+		    error;
 	}
 
 	// Update output weights
 	for (unsigned j = 0; j < neuralNetwork->numberHidden; j++)
 		for (unsigned k = 0; k < neuralNetwork->numberOutput; k++) {
-			double change = outputDeltas.elements[k]*
-							neuralNetwork->activationHidden.elements[j];
+			double change =
+			    outputDeltas.elements[k] *
+			    neuralNetwork->activationHidden.elements[j];
 			neuralNetwork->weightOutput.elements[j].elements[k] +=
-				(learningRate*change) +
-				(momentumFactor*
-				 neuralNetwork->changeOutput.elements[j].elements[k]);
-			neuralNetwork->changeOutput.elements[j].elements[k] = change;
+			    (learningRate * change) +
+			    (momentumFactor *
+			     neuralNetwork->changeOutput.elements[j]
+				 .elements[k]);
+			neuralNetwork->changeOutput.elements[j].elements[k] =
+			    change;
 		}
 
 	// Update input weights
 	for (unsigned i = 0; i < neuralNetwork->numberInput; i++)
 		for (unsigned j = 0; j < neuralNetwork->numberHidden; j++) {
-			double change = hiddenDeltas.elements[j]*
-							neuralNetwork->activationInput.elements[i];
+			double change =
+			    hiddenDeltas.elements[j] *
+			    neuralNetwork->activationInput.elements[i];
 			neuralNetwork->weightInput.elements[i].elements[j] +=
-				(learningRate*change) +
-				(momentumFactor*
-				 neuralNetwork->changeInput.elements[i].elements[j]);
-			neuralNetwork->changeInput.elements[i].elements[j] = change;
+			    (learningRate * change) +
+			    (momentumFactor *
+			     neuralNetwork->changeInput.elements[i]
+				 .elements[j]);
+			neuralNetwork->changeInput.elements[i].elements[j] =
+			    change;
 		}
 
 	// Calculate error
 	double error = 0;
 	for (unsigned k = 0; k < neuralNetwork->numberOutput; k++)
-		error += 0.5*pow(targets.elements[k] -
-							   neuralNetwork->activationOutput.elements[k],
-						   2);
+		error +=
+		    0.5 * pow(targets.elements[k] -
+				  neuralNetwork->activationOutput.elements[k],
+			      2);
 
 	return error;
 }
 
 void NeuralNetwork_train(struct NeuralNetwork *neuralNetwork,
-						unsignedArray2D input, unsignedArray2D output,
-						double threshold, double learningRate,
-						double momentumFactor)
+			 unsignedArray2D input, unsignedArray2D output,
+			 double threshold, double learningRate,
+			 double momentumFactor)
 {
 	double error = 0;
-	do
-	{
+	do {
 		error = 0;
 
 		for (unsigned j = 0; j < input.sizeX; j++) {
 			NeuralNetwork_update(neuralNetwork, input.elements[j]);
-			error +=
-				NeuralNetwork_backPropagate(neuralNetwork, output.elements[j],
-											learningRate, momentumFactor);
+			error += NeuralNetwork_backPropagate(
+			    neuralNetwork, output.elements[j], learningRate,
+			    momentumFactor);
 		}
-	} while(fabs(error) > threshold);
+	} while (fabs(error) > threshold);
 
 	printf("Final error ratio: %g\n", error);
 }
 
 void NeuralNetwork_test(struct NeuralNetwork *neuralNetwork,
-						unsignedArray2D input)
+			unsignedArray2D input)
 {
 	for (unsigned i = 0; i < input.sizeX; i++) {
 		print_unsignedArray(input.elements[i]);
 		printf(" -> ");
 		print_doubleArray(
-			NeuralNetwork_update(neuralNetwork, input.elements[i]));
+		    NeuralNetwork_update(neuralNetwork, input.elements[i]));
 		printf("\n");
 	}
 }
 
 doubleArray NeuralNetwork_testDouble(struct NeuralNetwork *neuralNetwork,
-									 unsignedArray input)
+				     unsignedArray input)
 {
 	return NeuralNetwork_update(neuralNetwork, input);
 }
 
 void NeuralNetwork_loadWeightInput(struct NeuralNetwork *neuralNetwork,
-								   char *serialized)
+				   char *serialized)
 {
 	unsigned pos = 0;
 	for (unsigned i = 0; i < neuralNetwork->numberInput; i++)
@@ -201,18 +216,19 @@ void NeuralNetwork_loadWeightInput(struct NeuralNetwork *neuralNetwork,
 			while (serialized[pos] != ';')
 				pos++;
 			pos++;
-			char *coef = malloc(10*sizeof (char));
+			char *coef = malloc(10 * sizeof(char));
 			strncpy(coef, &serialized[start], pos - start - 1);
 
 			// We actually don't need to really check for anything
 			// when adding the value to our weights, as we
 			// assume the user is importing correctly serialized
 			// weights.
-			neuralNetwork->weightInput.elements[i].elements[j] = atof(coef);
+			neuralNetwork->weightInput.elements[i].elements[j] =
+			    atof(coef);
 		}
 }
 void NeuralNetwork_loadWeightOutput(struct NeuralNetwork *neuralNetwork,
-									char *serialized)
+				    char *serialized)
 {
 	unsigned pos = 0;
 	for (unsigned j = 0; j < neuralNetwork->numberHidden; j++)
@@ -221,29 +237,32 @@ void NeuralNetwork_loadWeightOutput(struct NeuralNetwork *neuralNetwork,
 			while (serialized[pos] != ';')
 				pos++;
 			pos++;
-			char *coef = malloc(10*sizeof (char));
+			char *coef = malloc(10 * sizeof(char));
 			strncpy(coef, &serialized[start], pos - start - 1);
 
 			// We actually don't need to really check for anything
 			// when adding the value to our weights, as we
 			// assume the user is importing correctly serialized
 			// weights.
-			neuralNetwork->weightOutput.elements[j].elements[k] = atof(coef);
+			neuralNetwork->weightOutput.elements[j].elements[k] =
+			    atof(coef);
 		}
 }
 
 char *NeuralNetwork_serializeWeightsInput(struct NeuralNetwork *neuralNetwork)
 {
-	char *serialized = malloc(1*sizeof (char));
+	char *serialized = malloc(1 * sizeof(char));
 	unsigned curSize = 1;
 
 	for (unsigned i = 0; i < neuralNetwork->numberInput; i++)
 		for (unsigned j = 0; j < neuralNetwork->numberHidden; j++) {
 			curSize += 10;
-			serialized = realloc(serialized, curSize*sizeof (char));
+			serialized =
+			    realloc(serialized, curSize * sizeof(char));
 			char s[10];
-			sprintf(s, "%.6f",
-					neuralNetwork->weightInput.elements[i].elements[j]);
+			sprintf(
+			    s, "%.6f",
+			    neuralNetwork->weightInput.elements[i].elements[j]);
 			strcat(serialized, s);
 			strcat(serialized, ";");
 		}
@@ -252,16 +271,18 @@ char *NeuralNetwork_serializeWeightsInput(struct NeuralNetwork *neuralNetwork)
 }
 char *NeuralNetwork_serializeWeightsOutput(struct NeuralNetwork *neuralNetwork)
 {
-	char *serialized = malloc(1*sizeof (char));
+	char *serialized = malloc(1 * sizeof(char));
 	unsigned curSize = 1;
 
 	for (unsigned j = 0; j < neuralNetwork->numberHidden; j++)
 		for (unsigned k = 0; k < neuralNetwork->numberOutput; k++) {
 			curSize += 10;
-			serialized = realloc(serialized, curSize*sizeof (char));
+			serialized =
+			    realloc(serialized, curSize * sizeof(char));
 			char s[10];
 			sprintf(s, "%.6f",
-					neuralNetwork->weightOutput.elements[j].elements[k]);
+				neuralNetwork->weightOutput.elements[j]
+				    .elements[k]);
 			strcat(serialized, s);
 			strcat(serialized, ";");
 		}

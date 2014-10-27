@@ -5,7 +5,7 @@
 
 doubleArray new_doubleArray(unsigned i)
 {
-	double *x = malloc(i*sizeof (double));
+	double *x = malloc(i * sizeof(double));
 
 	for (unsigned k = 0; k < i; k++)
 		x[k] = 0;
@@ -18,7 +18,7 @@ doubleArray new_doubleArray(unsigned i)
 }
 doubleArray2D new_doubleArray2D(unsigned i, unsigned j)
 {
-	doubleArray *x = malloc(i*sizeof (doubleArray));
+	doubleArray *x = malloc(i * sizeof(doubleArray));
 
 	for (unsigned k = 0; k < i; k++)
 		x[k] = new_doubleArray(j);
@@ -33,7 +33,7 @@ doubleArray2D new_doubleArray2D(unsigned i, unsigned j)
 
 unsignedArray new_unsignedArray(unsigned i)
 {
-	unsigned *x = malloc(i*sizeof (unsigned));
+	unsigned *x = malloc(i * sizeof(unsigned));
 
 	for (unsigned k = 0; k < i; k++)
 		x[k] = 0;
@@ -46,7 +46,7 @@ unsignedArray new_unsignedArray(unsigned i)
 }
 unsignedArray2D new_unsignedArray2D(unsigned i, unsigned j)
 {
-	unsignedArray *x = malloc(i*sizeof (unsignedArray));
+	unsignedArray *x = malloc(i * sizeof(unsignedArray));
 
 	for (unsigned k = 0; k < i; k++)
 		x[k] = new_unsignedArray(j);

@@ -5,7 +5,7 @@
 #include "charDetection.h"
 
 unsigned charDetection_line(SDL_Surface *surface, struct ImageLine *imageLine,
-							unsigned startY)
+			    unsigned startY)
 {
 	int topX = surface->w;
 	int topY = surface->h;
@@ -48,7 +48,7 @@ unsigned charDetection_line(SDL_Surface *surface, struct ImageLine *imageLine,
 }
 
 unsigned charDetection_char(SDL_Surface *surface, struct ImageLine imageLine,
-							struct ImageChar *imageChar, unsigned startX)
+			    struct ImageChar *imageChar, unsigned startX)
 {
 	int topX = surface->w;
 	int topY = surface->h;
@@ -103,8 +103,8 @@ ImageLineArray charDetection_go(SDL_Surface *surface)
 		struct ImageChar imageChar;
 		unsigned startX = 0;
 
-		while (charDetection_char(surface, imageLine, &imageChar, startX) ==
-			   1) {
+		while (charDetection_char(surface, imageLine, &imageChar,
+					  startX) == 1) {
 			startX = imageChar.endX;
 			push_ImageCharArray(&charArray, imageChar);
 		}
