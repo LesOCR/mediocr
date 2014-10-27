@@ -4,7 +4,7 @@
 # Global Compilation Variables
 
 # The compiler
-CC=@gcc
+CC=gcc
 
 # Pre-processor flags
 CPPFLAGS=
@@ -18,17 +18,21 @@ LDFLAGS=
 # Linker libs
 LDLIBS= -lm `sdl-config --cflags --libs`
 
+SRC= main.c utils/neuralNetwork/neuralNetwork.c utils/neuralNetwork/charRecognition.c utils/helpers/maths.c utils/helpers/file.c utils/types/arrays.c utils/types/structArrays.c  utils/image/image.c utils/image/charDetection.c
+OBJ= ${SRC:.c=.o}
+
 # all target just call the production of main
-all: main clean
+all: main
 
 # main target using implicit rules, just express dependencies
-main: main.o utils/neuralNetwork/neuralNetwork.o utils/neuralNetwork/charRecognition.o utils/helpers/maths.o utils/helpers/file.o utils/types/arrays.o utils/types/structArrays.o  utils/image/image.o utils/image/charDetection.o
+main: ${OBJ}
 
 .PHONY: clean
 
 # clean compilation products
 clean:
-	@echo "Cleaning up .o files"
-	@find . -name "*.o" -type f -delete
+	find . -name "*.o" -type f -delete
+	find . -name "*~" -type f -delete
+	rm -f main
 
 # END of File
