@@ -11,9 +11,9 @@ ColumnLimit: 80
 ContinuationIndentWidth: 4
 IndentCaseLabels: false
 IndentCaseLabels: false
-IndentWidth: 4
+IndentWidth: 8
 KeepEmptyLinesAtTheStartOfBlocks: false
 Language: Cpp
 MaxEmptyLinesToKeep: 1
-TabWidth: 4
+TabWidth: 8
 UseTab: Always
