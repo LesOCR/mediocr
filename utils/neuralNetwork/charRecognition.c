@@ -1,7 +1,7 @@
 #include <SDL/SDL.h>
 #include <math.h>
 
-#include "NeuralNetwork.h"
+#include "neuralNetwork.h"
 #include "../types/arrays.h"
 #include "../image/image.h"
 #include "charRecognition.h"

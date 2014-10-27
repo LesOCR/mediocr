@@ -50,6 +50,7 @@ int startNeuralNetwork()
 	printf("Serialized output weights: \n%s\n", serializedOutput);
 	printf("Unserializing:\n");
 	NeuralNetwork_loadWeightInput(myNeuralNetwork, serializedInput);
+	printf("Done! (loaded into the neural network)\n");
 
 	return 1;
 }
@@ -100,6 +101,7 @@ void outputHelp()
 	printf(" Authors: Manuel HUEZ, Louis-Paul DAREAU, Erenus DERMANCI, Cyril CHEMLA\n");
 	printf(" Version: 1.0.0.0\n\n");
 	printf(" Options:\n");
+	printf(" -m: Mode: [live|neuralnetwork|chardetection]\n");
 	printf(" -f: Path of the file that needs to be processed.\n");
 	printf(" -c: Path of the file used by the neural network to learn.\n");
 	printf(" -s: String containing the chars in the file used to learn.\n");
@@ -112,12 +114,16 @@ void outputHelp()
 int main(int argc, char *argv[])
 {
 	int c;
+	char *mode     = "live";
 	char *filePath = "data/text/awesome.bmp";
 	char *charPath = "data/text/caps.bmp";
 	char *charList = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 
-	while ((c = getopt(argc, argv, "f:c:s:h")) != -1) {
+	while ((c = getopt(argc, argv, "m:f:c:s:h")) != -1) {
 		switch(c) {
+		case 'm':
+			mode = optarg;
+			break;
 		case 'f':
 			filePath = optarg;
 			break;
@@ -136,14 +142,18 @@ int main(int argc, char *argv[])
 	if (!setup())
 		err(1, "Error during the initial setup.");
 
-	// if(!startNeuralNetwork())
-	// 	err(1, "Error during the neural network instance.");
-
-	// if(!startImageProcessing())
-	// 	err(1, "Error during the image processing.");
-
-	if (!startNeuralNetworkChar(charPath, charList, filePath))
-		err(1, "Error during the real neural network instance");
+	if(strcmp(mode, "neuralnetwork") == 0) {
+		if(!startNeuralNetwork())
+			err(1, "Error during the neural network instance.");
+	}
+	else if(strcmp(mode, "chardetection") == 0) {
+		if(!startImageProcessing())
+			err(1, "Error during the image processing.");
+	}
+	else {
+		if (!startNeuralNetworkChar(charPath, charList, filePath))
+			err(1, "Error during the real neural network instance");
+	}
 
 	printf("MediOCR ended! \n");
 
