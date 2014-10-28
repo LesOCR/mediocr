@@ -4,6 +4,7 @@
 #include <time.h>
 #include <SDL/SDL.h>
 #include <unistd.h>
+#include <getopt.h>
 
 #include "utils/neuralNetwork/neuralNetwork.h"
 #include "utils/neuralNetwork/charRecognition.h"
