@@ -174,6 +174,7 @@ void NeuralNetwork_train(struct NeuralNetwork *neuralNetwork,
 			 double momentumFactor)
 {
 	double error = 0;
+	unsigned long step = 0;
 	do {
 		error = 0;
 
@@ -183,6 +184,13 @@ void NeuralNetwork_train(struct NeuralNetwork *neuralNetwork,
 			    neuralNetwork, output.elements[j], learningRate,
 			    momentumFactor);
 		}
+
+		if(!(++step % 10000))
+		{
+			printf("Error ratio: %g\n", error);
+			step = 0;
+		}
+
 	} while (fabs(error) > threshold);
 
 	printf("Final error ratio: %g\n", error);

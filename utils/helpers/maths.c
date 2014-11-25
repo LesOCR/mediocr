@@ -11,11 +11,10 @@ double maths_rand(double a, double b)
 
 double maths_sigmoid(double x)
 {
-	return tanh(x);
-	// return 1/(1 + exp(-x));
+	return 1.0 / (1.0 + exp(-x));
 }
 
 double maths_dsigmoid(double y)
 {
-	return 1 - (y * y);
+	return maths_sigmoid(y) * (1.0 - maths_sigmoid(y));
 }

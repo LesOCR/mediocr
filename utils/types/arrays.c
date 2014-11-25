@@ -106,7 +106,7 @@ void print_unsignedArray2D(unsignedArray2D myArray)
 
 	for (unsigned i = 0; i < myArray.sizeX; i++) {
 		if (i > 0)
-			printf(", ");
+			printf(", \n");
 
 		print_unsignedArray(myArray.elements[i]);
 	}
@@ -119,7 +119,7 @@ void print_doubleArray2D(doubleArray2D myArray)
 
 	for (unsigned i = 0; i < myArray.sizeX; i++) {
 		if (i > 0)
-			printf(", ");
+			printf(", \n");
 
 		print_doubleArray(myArray.elements[i]);
 	}

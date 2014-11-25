@@ -20,35 +20,50 @@ int setup()
 	return 1;
 }
 
-int startNeuralNetwork()
+int testMultiNeuralNetwork()
 {
-	struct NeuralNetwork *myNeuralNetwork = neuralNetwork_main(2, 2, 1);
+	struct NeuralNetwork *myNeuralNetwork = neuralNetwork_main(4, 2, 2);
 
-	unsignedArray2D input = new_unsignedArray2D(4, 2);
-	unsignedArray2D output = new_unsignedArray2D(4, 1);
+	unsignedArray2D input = new_unsignedArray2D(4, 4);
+	unsignedArray2D output = new_unsignedArray2D(4, 2);
 
-	input.elements[0].elements[0] = 0;
+	input.elements[0].elements[0] = 1;
 	input.elements[0].elements[1] = 0;
+	input.elements[0].elements[2] = 0;
+	input.elements[0].elements[3] = 0;
+
 	input.elements[1].elements[0] = 0;
 	input.elements[1].elements[1] = 1;
-	input.elements[2].elements[0] = 1;
+	input.elements[1].elements[2] = 0;
+	input.elements[1].elements[3] = 0;
+
+	input.elements[2].elements[0] = 0;
 	input.elements[2].elements[1] = 0;
-	input.elements[3].elements[0] = 1;
-	input.elements[3].elements[1] = 1;
+	input.elements[2].elements[2] = 1;
+	input.elements[2].elements[3] = 0;
 
-	output.elements[0].elements[0] = 0;
+	input.elements[3].elements[0] = 0;
+	input.elements[3].elements[1] = 0;
+	input.elements[3].elements[2] = 0;
+	input.elements[3].elements[3] = 1;
+
+	output.elements[0].elements[0] = 1;
+	output.elements[0].elements[1] = 0;
 	output.elements[1].elements[0] = 1;
-	output.elements[2].elements[0] = 1;
+	output.elements[1].elements[1] = 0;
+	output.elements[2].elements[0] = 0;
+	output.elements[2].elements[1] = 1;
 	output.elements[3].elements[0] = 0;
+	output.elements[3].elements[1] = 1;
 
-	NeuralNetwork_train(myNeuralNetwork, input, output, 0.000001, 0.5, 0);
+	NeuralNetwork_train(myNeuralNetwork, input, output, 0.00001, 0.5, 0.1);
 
 	NeuralNetwork_test(myNeuralNetwork, input);
 
 	char *serializedInput =
-	    NeuralNetwork_serializeWeightsInput(myNeuralNetwork);
+	NeuralNetwork_serializeWeightsInput(myNeuralNetwork);
 	char *serializedOutput =
-	    NeuralNetwork_serializeWeightsOutput(myNeuralNetwork);
+	NeuralNetwork_serializeWeightsOutput(myNeuralNetwork);
 	printf("Serialized input weights: \n%s\n", serializedInput);
 	printf("Serialized output weights: \n%s\n", serializedOutput);
 	printf("Unserializing:\n");
@@ -62,7 +77,7 @@ int startNeuralNetworkChar(char *charsInput, char *characters, char *read)
 {
 	SDL_Surface *surface = image_load(charsInput);
 
-	struct charRecognitionList *charRecog =
+	struct charRecognition *charRecog =
 	    charRecognition_learn(surface, characters, strlen(characters));
 
 	SDL_Surface *text = image_load(read);
@@ -152,7 +167,7 @@ int main(int argc, char *argv[])
 		err(1, "Error during the initial setup.");
 
 	if (strcmp(mode, "neuralnetwork") == 0) {
-		if (!startNeuralNetwork())
+		if (!testMultiNeuralNetwork())
 			err(1, "Error during the neural network instance.");
 	} else if (strcmp(mode, "chardetection") == 0) {
 		if (filePath == NULL)

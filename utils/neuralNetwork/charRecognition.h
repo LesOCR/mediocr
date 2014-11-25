@@ -7,7 +7,8 @@
 #define UTILS_NEURALNETWORK_CHARRECOGNITION_
 
 struct charRecognition {
-	char letter;
+	char *letters;
+	unsigned size;
 	struct NeuralNetwork *network;
 };
 
@@ -16,9 +17,9 @@ struct charRecognitionList {
 	struct charRecognitionList *next;
 };
 
-struct charRecognitionList *charRecognition_learn(SDL_Surface *surface,
+struct charRecognition *charRecognition_learn(SDL_Surface *surface,
 						  char chars[], size_t size);
-char charRecognition_getChar(struct charRecognitionList *list,
+char charRecognition_getChar(struct charRecognition *list,
 			     SDL_Surface *surface);
 
 #endif
