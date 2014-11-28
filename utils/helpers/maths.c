@@ -18,3 +18,13 @@ double maths_dsigmoid(double y)
 {
 	return maths_sigmoid(y) * (1.0 - maths_sigmoid(y));
 }
+
+int maths_between(int in, Uint16 l, Uint16 r)
+{
+	if(in > r)
+		in = r;
+	if(in < l)
+		in = l;
+
+	return in;
+}

@@ -15,7 +15,7 @@ struct charRecognition *charRecognition_learn(SDL_Surface *surface,
 	ImageLineArray imageLineArray = charDetection_go(surface);
 
 	struct NeuralNetwork *myNeuralNetwork =
-		neuralNetwork_main(256, 16, size);
+		neuralNetwork_main(256, 10, size);
 
 	unsignedArray2D input = new_unsignedArray2D(size, 256);
 	unsignedArray2D output = new_unsignedArray2D(size, size);
@@ -41,8 +41,8 @@ struct charRecognition *charRecognition_learn(SDL_Surface *surface,
 		}
 	}
 
-	NeuralNetwork_train(myNeuralNetwork, input, output, 0.001, 0.001,
-				0.0001);
+	NeuralNetwork_train(myNeuralNetwork, input, output, 0.01, 0.001,
+				0.00001);
 	charReg->letters = chars;
 	charReg->size    = size;
 	charReg->network = myNeuralNetwork;

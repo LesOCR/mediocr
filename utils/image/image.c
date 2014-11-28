@@ -7,6 +7,65 @@
 #include "charDetection.h"
 #include "../helpers/file.h"
 
+void wait_for_keypressed(void) {
+	SDL_Event             event;
+	// Infinite loop, waiting for event
+	for (;;) {
+		// Take an event
+		SDL_PollEvent( &event );
+		// Switch on event type
+		switch (event.type) {
+			// Someone pressed a key -> leave the function
+			case SDL_KEYDOWN: return;
+			default: break;
+		}
+		// Loop until we got the expected event
+	}
+}
+
+SDL_Surface* image_display(SDL_Surface *img)
+{
+	SDL_Surface          *screen;
+	// Set the window to the same size as the image
+	screen = SDL_SetVideoMode(img->w, img->h, 0, SDL_SWSURFACE|SDL_ANYFORMAT);
+	if ( screen == NULL ) {
+		// error management
+		errx(1, "Couldn't set %dx%d video mode: %s\n",
+		img->w, img->h, SDL_GetError());
+	}
+
+	/* Blit onto the screen surface */
+	if(SDL_BlitSurface(img, NULL, screen, NULL) < 0)
+		warnx("BlitSurface error: %s\n", SDL_GetError());
+
+	// Update the screen
+	SDL_UpdateRect(screen, 0, 0, img->w, img->h);
+
+	// wait for a key
+	wait_for_keypressed();
+
+	// return the screen for further uses
+	return screen;
+}
+
+SDL_Surface *image_copy(SDL_Surface *surf)
+{
+	SDL_LockSurface(surf);
+
+	SDL_Surface *res;
+	res = SDL_CreateRGBSurface(surf->flags, surf->w, surf->h,
+		surf->format->BitsPerPixel, surf->format->Rmask,
+		surf->format->Gmask, surf->format->Bmask,
+		surf->format->Amask);
+	if(res != NULL) {
+		SDL_BlitSurface(surf, NULL, res, NULL);
+	}
+
+	SDL_UnlockSurface(surf);
+
+	return res;
+}
+
 SDL_Surface *image_load(char *path)
 {
 	printf("Loading image [%s]\n", path);
@@ -84,8 +143,10 @@ SDL_Color image_getPixelColor(SDL_Surface *surface, unsigned x, unsigned y)
 
 Uint32 image_getPixelUint32(SDL_Surface *surface, unsigned x, unsigned y)
 {
+	SDL_LockSurface(surface);
 	Uint8 *p = (Uint8 *)surface->pixels + y * surface->pitch +
 		   x * surface->format->BytesPerPixel;
+	SDL_UnlockSurface(surface);
 
 	switch (surface->format->BytesPerPixel) {
 	case 1:
@@ -132,12 +193,15 @@ unsigned image_getPixelBool(SDL_Surface *surface, unsigned x, unsigned y)
 
 static inline Uint8 *pixelref(SDL_Surface *surf, unsigned x, unsigned y)
 {
+	SDL_LockSurface(surf);
 	int bpp = surf->format->BytesPerPixel;
+	SDL_UnlockSurface(surf);
 	return (Uint8 *)surf->pixels + y * surf->pitch + x * bpp;
 }
 
 void image_putPixel(SDL_Surface *surface, unsigned x, unsigned y, Uint32 pixel)
 {
+	SDL_LockSurface(surface);
 	Uint8 *p = pixelref(surface, x, y);
 	switch (surface->format->BytesPerPixel) {
 	case 1:
@@ -161,6 +225,7 @@ void image_putPixel(SDL_Surface *surface, unsigned x, unsigned y, Uint32 pixel)
 		*(Uint32 *)p = pixel;
 		break;
 	}
+	SDL_UnlockSurface(surface);
 }
 
 void image_renderConsoleFromTo(SDL_Surface *surface, unsigned x1, unsigned y1,

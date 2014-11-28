@@ -10,7 +10,7 @@ struct ImageChar {
 	unsigned endX;
 	unsigned endY;
 
-	char *content;
+	char content;
 };
 
 struct ImageLine {
@@ -20,6 +20,8 @@ struct ImageLine {
 	unsigned endY;
 
 	ImageCharArray chars;
+
+	char *content;
 };
 
 unsigned charDetection_line(SDL_Surface *surface, struct ImageLine *imageLine,

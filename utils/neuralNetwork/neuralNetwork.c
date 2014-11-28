@@ -76,6 +76,7 @@ doubleArray NeuralNetwork_update(struct NeuralNetwork *neuralNetwork,
 			sum +=
 			    neuralNetwork->activationInput.elements[i] *
 			    neuralNetwork->weightInput.elements[i].elements[j];
+
 		neuralNetwork->activationHidden.elements[j] =
 		    maths_sigmoid(sum);
 	}
@@ -87,6 +88,7 @@ doubleArray NeuralNetwork_update(struct NeuralNetwork *neuralNetwork,
 			sum +=
 			    neuralNetwork->activationHidden.elements[j] *
 			    neuralNetwork->weightOutput.elements[j].elements[k];
+
 		neuralNetwork->activationOutput.elements[k] =
 		    maths_sigmoid(sum);
 	}
@@ -107,6 +109,7 @@ double NeuralNetwork_backPropagate(struct NeuralNetwork *neuralNetwork,
 	for (unsigned k = 0; k < neuralNetwork->numberOutput; k++) {
 		double error = targets.elements[k] -
 			       neuralNetwork->activationOutput.elements[k];
+
 		outputDeltas.elements[k] =
 		    maths_dsigmoid(
 			neuralNetwork->activationOutput.elements[k]) *
@@ -121,6 +124,7 @@ double NeuralNetwork_backPropagate(struct NeuralNetwork *neuralNetwork,
 			error +=
 			    outputDeltas.elements[k] *
 			    neuralNetwork->weightOutput.elements[j].elements[k];
+				
 		hiddenDeltas.elements[j] =
 		    maths_dsigmoid(
 			neuralNetwork->activationHidden.elements[j]) *
@@ -161,7 +165,7 @@ double NeuralNetwork_backPropagate(struct NeuralNetwork *neuralNetwork,
 	double error = 0;
 	for (unsigned k = 0; k < neuralNetwork->numberOutput; k++)
 		error +=
-		    0.5 * pow(targets.elements[k] -
+		    (1.0 / neuralNetwork->numberInput) * pow(targets.elements[k] -
 				  neuralNetwork->activationOutput.elements[k],
 			      2);
 

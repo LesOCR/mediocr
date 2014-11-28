@@ -5,6 +5,8 @@
 #ifndef UTILS_IMAGE_IMAGE_
 #define UTILS_IMAGE_IMAGE_
 
+SDL_Surface* image_display(SDL_Surface *img);
+SDL_Surface *image_copy(SDL_Surface *surf);
 SDL_Surface *image_load(char *path);
 SDL_Surface *image_scale(SDL_Surface *Surface, Uint16 Width, Uint16 Height);
 SDL_Surface *image_extractChar(SDL_Surface *surface, struct ImageChar *c);

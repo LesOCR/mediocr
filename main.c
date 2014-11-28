@@ -10,6 +10,7 @@
 #include "utils/neuralNetwork/charRecognition.h"
 #include "utils/types/arrays.h"
 #include "utils/image/image.h"
+#include "utils/image/convolution.h"
 #include "utils/image/charDetection.h"
 #include "utils/types/structArrays.h"
 
@@ -86,10 +87,13 @@ int startNeuralNetworkChar(char *charsInput, char *characters, char *read)
 	for (unsigned i = 0; i < imageLine.size; i++) {
 		for (unsigned j = 0; j < imageLine.elements[i].chars.size;
 		     j++) {
+			struct ImageChar imageChar = imageLine.elements[i].chars.elements[j];
 			SDL_Surface *s = image_scale(
 			    image_extractChar(
-				text, &imageLine.elements[i].chars.elements[j]),
+				text, &imageChar),
 			    16, 16);
+
+			imageChar.content = charRecognition_getChar(charRecog, s);
 
 			printf("%c", charRecognition_getChar(charRecog, s));
 		}
@@ -102,16 +106,28 @@ int startNeuralNetworkChar(char *charsInput, char *characters, char *read)
 int startImageProcessing(char *path)
 {
 	SDL_Surface *surface = image_load(path);
-	ImageLineArray imageLine = charDetection_go(surface);
 
-	for (unsigned i = 0; i < imageLine.size; i++)
-		for (unsigned j = 0; j < imageLine.elements[i].chars.size;
-		     j++) {
-			SDL_Surface *s = image_extractChar(
-			    surface, &imageLine.elements[i].chars.elements[j]);
-			image_renderConsole(image_scale(s, 16, 16));
-			printf("\n");
-		}
+	image_display(surface);
+
+	int matrix[9] = {
+		1, 1, 1,
+		1, 1, 1,
+		1, 1, 1
+	};
+	surface = convolution_apply(surface, &matrix[0], 9);
+
+	image_display(surface);
+
+	// ImageLineArray imageLine = charDetection_go(surface);
+	//
+	// for (unsigned i = 0; i < imageLine.size; i++)
+	// 	for (unsigned j = 0; j < imageLine.elements[i].chars.size;
+	// 	     j++) {
+	// 		SDL_Surface *s = image_extractChar(
+	// 		    surface, &imageLine.elements[i].chars.elements[j]);
+	// 		image_renderConsole(image_scale(s, 16, 16));
+	// 		printf("\n");
+	// 	}
 
 	return 1;
 }
@@ -171,7 +187,7 @@ int main(int argc, char *argv[])
 			err(1, "Error during the neural network instance.");
 	} else if (strcmp(mode, "chardetection") == 0) {
 		if (filePath == NULL)
-			filePath = "data/text/3lines.bmp";
+			filePath = "data/text/big.bmp";
 
 		if (!startImageProcessing(filePath))
 			err(1, "Error during the image processing.");
