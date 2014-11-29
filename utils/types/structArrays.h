@@ -13,8 +13,18 @@ typedef struct {
 	struct ImageLine *elements;
 } ImageLineArray;
 
+typedef struct {
+	unsigned capacity;
+	unsigned size;
+	struct ImageBlock *elements;
+} ImageBlockArray;
+
+ImageBlockArray new_ImageBlockArray(unsigned i);
 ImageLineArray new_ImageLineArray(unsigned i);
 ImageCharArray new_ImageCharArray(unsigned i);
+void push_ImageBlockArray(ImageBlockArray *array, struct ImageBlock imageBlock);
+void add_ImageBlockArray(ImageBlockArray *array, unsigned i,
+			struct ImageBlock imageBlock);
 void push_ImageLineArray(ImageLineArray *array, struct ImageLine imageLine);
 void add_ImageLineArray(ImageLineArray *array, unsigned i,
 			struct ImageLine imageLine);

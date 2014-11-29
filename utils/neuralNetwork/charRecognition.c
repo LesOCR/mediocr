@@ -12,7 +12,8 @@ struct charRecognition *charRecognition_learn(SDL_Surface *surface,
 	struct charRecognition *charReg =
 		malloc(sizeof(struct charRecognition));
 
-	ImageLineArray imageLineArray = charDetection_go(surface);
+	ImageLineArray imageLineArray = charDetection_blocks(surface)
+		.elements[0].lines;
 
 	struct NeuralNetwork *myNeuralNetwork =
 		neuralNetwork_main(256, 10, size);
@@ -41,7 +42,7 @@ struct charRecognition *charRecognition_learn(SDL_Surface *surface,
 		}
 	}
 
-	NeuralNetwork_train(myNeuralNetwork, input, output, 0.01, 0.001,
+	NeuralNetwork_train(myNeuralNetwork, input, output, 0.0001, 0.001,
 				0.00001);
 	charReg->letters = chars;
 	charReg->size    = size;

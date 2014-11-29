@@ -82,22 +82,29 @@ int startNeuralNetworkChar(char *charsInput, char *characters, char *read)
 	    charRecognition_learn(surface, characters, strlen(characters));
 
 	SDL_Surface *text = image_load(read);
-	ImageLineArray imageLine = charDetection_go(text);
+	ImageBlockArray imageBlock = charDetection_blocks(text);
 	printf("Recognized string: \n");
-	for (unsigned i = 0; i < imageLine.size; i++) {
-		for (unsigned j = 0; j < imageLine.elements[i].chars.size;
-		     j++) {
-			struct ImageChar imageChar = imageLine.elements[i].chars.elements[j];
-			SDL_Surface *s = image_scale(
-			    image_extractChar(
-				text, &imageChar),
-			    16, 16);
+	for(unsigned h = 0; h < imageBlock.size; h++) {
+		printf("\n");
+		ImageLineArray imageLine = imageBlock.elements[h].lines;
+		for (unsigned i = 0; i < imageLine.size; i++) {
+			for (unsigned j = 0; j < imageLine.elements[i].chars.size;
+				j++) {
+				struct ImageChar imageChar = imageLine.elements[i].chars.elements[j];
+				SDL_Surface *s = image_scale(
+					image_extractChar(
+						text, &imageChar),
+					16, 16);
 
-			imageChar.content = charRecognition_getChar(charRecog, s);
+				image_display(s);
 
-			printf("%c", charRecognition_getChar(charRecog, s));
+				imageChar.content = charRecognition_getChar(charRecog, s);
+
+				printf("%c", charRecognition_getChar(charRecog, s));
+			}
 		}
 	}
+
 	printf("\n");
 
 	return 1;
@@ -114,9 +121,10 @@ int startImageProcessing(char *path)
 		1, 1, 1,
 		1, 1, 1
 	};
-	surface = convolution_apply(surface, &matrix[0], 9);
 
-	image_display(surface);
+	image_display(convolution_apply(surface, &matrix[0], 9));
+
+	charDetection_blocks(surface);
 
 	// ImageLineArray imageLine = charDetection_go(surface);
 	//
@@ -187,13 +195,13 @@ int main(int argc, char *argv[])
 			err(1, "Error during the neural network instance.");
 	} else if (strcmp(mode, "chardetection") == 0) {
 		if (filePath == NULL)
-			filePath = "data/text/big.bmp";
+			filePath = "data/text/bigcaps.bmp";
 
 		if (!startImageProcessing(filePath))
 			err(1, "Error during the image processing.");
 	} else {
 		if (filePath == NULL)
-			filePath = "data/text/awesome.bmp";
+			filePath = "data/text/bigcaps.bmp";
 
 		if (!startNeuralNetworkChar(charPath, charList, filePath))
 			err(1, "Error during the real neural network instance");
