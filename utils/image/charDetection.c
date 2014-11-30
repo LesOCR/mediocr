@@ -135,7 +135,7 @@ ImageBlockArray charDetection_blocks(SDL_Surface *surface)
 					surface, topX, topY, bottomX, bottomY
 				);
 
-				push_ImageBlockArray(&blockArray, imageBlock);
+				printf("blocks: %d\n", blockArray.size);
 			}
 		}
 	}

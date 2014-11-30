@@ -12,8 +12,7 @@ struct charRecognition *charRecognition_learn(SDL_Surface *surface,
 	struct charRecognition *charReg =
 		malloc(sizeof(struct charRecognition));
 
-	ImageLineArray imageLineArray = charDetection_blocks(surface)
-		.elements[0].lines;
+	ImageBlockArray imageBlockArray = charDetection_blocks(surface);
 
 	struct NeuralNetwork *myNeuralNetwork =
 		neuralNetwork_main(256, 10, size);
@@ -21,24 +20,31 @@ struct charRecognition *charRecognition_learn(SDL_Surface *surface,
 	unsignedArray2D input = new_unsignedArray2D(size, 256);
 	unsignedArray2D output = new_unsignedArray2D(size, size);
 
-	for (unsigned i = 0; i < imageLineArray.size; i++) {
-		for (unsigned j = 0;
-			j < imageLineArray.elements[i].chars.size; j++) {
-			SDL_Surface *s = image_scale(
-				image_extractChar(
-				surface, &imageLineArray.elements[i]
-						.chars.elements[j]),
-				16, 16);
+	printf("blocks: %d\n", imageBlockArray.size);
 
-			for (unsigned k = 0; k < 16; k++)
-				for (unsigned l = 0; l < 16; l++)
-					input.elements[j + i * 16]
-						.elements[k + l * 16] =
+	for(unsigned h = 0; h < imageBlockArray.size; h++) {
+		ImageLineArray imageLineArray = imageBlockArray.elements[h].lines;
+		for (unsigned i = 0; i < imageLineArray.size; i++) {
+			for (unsigned j = 0;
+				j < imageLineArray.elements[i].chars.size; j++) {
+				SDL_Surface *s = image_scale(
+					image_extractChar(
+					surface, &imageLineArray.elements[i]
+					.chars.elements[j]),
+					16, 16);
+
+				image_display(s);
+
+				for (unsigned k = 0; k < 16; k++)
+					for (unsigned l = 0; l < 16; l++)
+						input.elements[j + i * 16]
+							.elements[k + l * 16] =
 							image_getPixelBool(s, k, l);
 
-			for(unsigned h = 0; h < size; h++)
-				output.elements[j + i * 16].elements[h] =
+				for(unsigned h = 0; h < size; h++)
+					output.elements[j + i * 16].elements[h] =
 					(j + i * 16 == h);
+			}
 		}
 	}
 

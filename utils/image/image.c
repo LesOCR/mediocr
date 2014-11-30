@@ -53,13 +53,19 @@ SDL_Surface *image_copy(SDL_Surface *surf)
 	SDL_LockSurface(surf);
 
 	SDL_Surface *res;
+
 	res = SDL_CreateRGBSurface(surf->flags, surf->w, surf->h,
 		surf->format->BitsPerPixel, surf->format->Rmask,
 		surf->format->Gmask, surf->format->Bmask,
 		surf->format->Amask);
+
+	SDL_LockSurface(res);
+
 	if(res != NULL) {
 		SDL_BlitSurface(surf, NULL, res, NULL);
 	}
+
+	SDL_UnlockSurface(res);
 
 	SDL_UnlockSurface(surf);
 
@@ -128,7 +134,7 @@ SDL_Surface *image_extractChar(SDL_Surface *surface, struct ImageChar *c)
 SDL_Color image_getPixelColor(SDL_Surface *surface, unsigned x, unsigned y)
 {
 	Uint32 intColor = image_getPixelUint32(surface, x, y);
-#if SDL_BYTEORDER == SDL_BIG_ENDIAN
+#if SDL_BYTEORDER != SDL_BIG_ENDIAN
 	SDL_Color color = {(intColor & 0x00ff0000) / 0x10000,
 			   (intColor & 0x0000ff00) / 0x100,
 			   (intColor & 0x000000ff), 0};
@@ -139,40 +145,6 @@ SDL_Color image_getPixelColor(SDL_Surface *surface, unsigned x, unsigned y)
 #endif
 
 	return color;
-}
-
-Uint32 image_getPixelUint32(SDL_Surface *surface, unsigned x, unsigned y)
-{
-	SDL_LockSurface(surface);
-	Uint8 *p = (Uint8 *)surface->pixels + y * surface->pitch +
-		   x * surface->format->BytesPerPixel;
-	SDL_UnlockSurface(surface);
-
-	switch (surface->format->BytesPerPixel) {
-	case 1:
-		return *p;
-		break;
-
-	case 2:
-		return *(Uint16 *)p;
-		break;
-
-	case 3:
-#if SDL_BYTEORDER == SDL_BIG_ENDIAN //
-		return p[0] << 16 | p[1] << 8 | p[2];
-#else  //
-		return p[0] | p[1] << 8 | p[2] << 16;
-#endif //
-		break;
-
-	case 4:
-		return *(Uint32 *)p;
-		break;
-
-	default:
-		return 0;
-		break; //
-	}
 }
 
 unsigned image_getGreyscale(SDL_Color color)
@@ -197,6 +169,27 @@ static inline Uint8 *pixelref(SDL_Surface *surf, unsigned x, unsigned y)
 	int bpp = surf->format->BytesPerPixel;
 	SDL_UnlockSurface(surf);
 	return (Uint8 *)surf->pixels + y * surf->pitch + x * bpp;
+}
+
+Uint32 image_getPixelUint32(SDL_Surface *surface, unsigned x, unsigned y)
+{
+	SDL_LockSurface(surface);
+	Uint8 *p = pixelref(surface, x, y);
+	SDL_UnlockSurface(surface);
+	switch(surface->format->BytesPerPixel) {
+		case 1:
+		return *p;
+		case 2:
+		return *(Uint16 *)p;
+		case 3:
+		if(SDL_BYTEORDER == SDL_BIG_ENDIAN)
+			return p[0] << 16 | p[1] << 8 | p[2];
+		else
+			return p[0] | p[1] << 8 | p[2] << 16;
+		case 4:
+			return *(Uint32 *)p;
+	}
+	return 0;
 }
 
 void image_putPixel(SDL_Surface *surface, unsigned x, unsigned y, Uint32 pixel)

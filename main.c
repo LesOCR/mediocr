@@ -96,8 +96,6 @@ int startNeuralNetworkChar(char *charsInput, char *characters, char *read)
 						text, &imageChar),
 					16, 16);
 
-				image_display(s);
-
 				imageChar.content = charRecognition_getChar(charRecog, s);
 
 				printf("%c", charRecognition_getChar(charRecog, s));
@@ -116,26 +114,13 @@ int startImageProcessing(char *path)
 
 	image_display(surface);
 
-	int matrix[9] = {
+	int convolution_blur[9] = {
 		1, 1, 1,
-		1, 1, 1,
-		1, 1, 1
+		8, 1, 8,
+		8, 1, 8
 	};
 
-	image_display(convolution_apply(surface, &matrix[0], 9));
-
-	charDetection_blocks(surface);
-
-	// ImageLineArray imageLine = charDetection_go(surface);
-	//
-	// for (unsigned i = 0; i < imageLine.size; i++)
-	// 	for (unsigned j = 0; j < imageLine.elements[i].chars.size;
-	// 	     j++) {
-	// 		SDL_Surface *s = image_extractChar(
-	// 		    surface, &imageLine.elements[i].chars.elements[j]);
-	// 		image_renderConsole(image_scale(s, 16, 16));
-	// 		printf("\n");
-	// 	}
+	image_display(convolution_apply(surface, &convolution_blur[0], 3, 30));
 
 	return 1;
 }
@@ -195,7 +180,8 @@ int main(int argc, char *argv[])
 			err(1, "Error during the neural network instance.");
 	} else if (strcmp(mode, "chardetection") == 0) {
 		if (filePath == NULL)
-			filePath = "data/text/bigcaps.bmp";
+			//filePath = "data/images/homer.bmp";
+			filePath = "data/text/alphabetfonts.bmp";
 
 		if (!startImageProcessing(filePath))
 			err(1, "Error during the image processing.");
