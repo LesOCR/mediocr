@@ -3,6 +3,8 @@
 #include <string.h>
 #include <err.h>
 #include <math.h>
+
+#include "../helpers/strings.h"
 #include "../helpers/maths.h"
 #include "../types/arrays.h"
 #include "neuralNetwork.h"
@@ -199,9 +201,9 @@ void NeuralNetwork_train(struct NeuralNetwork *neuralNetwork,
 
 	printf("Final error ratio: %g\n", error);
 
-	printf("final weights: \n");
-	NeuralNetwork_serializeWeightsInput(neuralNetwork);
-	NeuralNetwork_serializeWeightsOutput(neuralNetwork);
+	// printf("final weights: \n");
+	// printf("%s\n", NeuralNetwork_serializeWeightsInput(neuralNetwork));
+	// printf("%s\n", NeuralNetwork_serializeWeightsOutput(neuralNetwork));
 
 }
 
@@ -268,40 +270,32 @@ void NeuralNetwork_loadWeightOutput(struct NeuralNetwork *neuralNetwork,
 
 char *NeuralNetwork_serializeWeightsInput(struct NeuralNetwork *neuralNetwork)
 {
-	char *serialized = malloc(1 * sizeof(char));
-	unsigned curSize = 1;
+	char *serialized = "";
 
 	for (unsigned i = 0; i < neuralNetwork->numberInput; i++)
 		for (unsigned j = 0; j < neuralNetwork->numberHidden; j++) {
-			curSize += 10;
-			serialized =
-			    realloc(serialized, curSize * sizeof(char));
 			char s[10];
 			sprintf(
 			    s, "%.6f",
 			    neuralNetwork->weightInput.elements[i].elements[j]);
-			strcat(serialized, s);
-			strcat(serialized, ";");
+			serialized = string_concat(serialized, s);
+			serialized = string_concat(serialized, ";");
 		}
 
 	return serialized;
 }
 char *NeuralNetwork_serializeWeightsOutput(struct NeuralNetwork *neuralNetwork)
 {
-	char *serialized = malloc(1 * sizeof(char));
-	unsigned curSize = 1;
+	char *serialized = "";
 
 	for (unsigned j = 0; j < neuralNetwork->numberHidden; j++)
 		for (unsigned k = 0; k < neuralNetwork->numberOutput; k++) {
-			curSize += 10;
-			serialized =
-			    realloc(serialized, curSize * sizeof(char));
 			char s[10];
 			sprintf(s, "%.6f",
 				neuralNetwork->weightOutput.elements[j]
 				    .elements[k]);
-			strcat(serialized, s);
-			strcat(serialized, ";");
+			serialized = string_concat(serialized, s);
+			serialized = string_concat(serialized, ";");
 		}
 
 	return serialized;

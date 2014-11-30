@@ -104,7 +104,6 @@ ImageBlockArray charDetection_blocks(SDL_Surface *surface)
 	ImageBlockArray blockArray = new_ImageBlockArray(1);
 	struct ImageBlock imageBlock;
 
-	unsigned first = 1;
 	for(unsigned x = 0; x < (unsigned)blurredSurface->w; x++)
 	{
 		for(unsigned y = 0; y < (unsigned)blurredSurface->h; y++)
@@ -120,12 +119,6 @@ ImageBlockArray charDetection_blocks(SDL_Surface *surface)
 			// The following ifs are wonderful hacks
 			if(topX != surface->w || topY != surface->h || bottomX != -1 || bottomY != -1)
 			{
-				if(first)
-				{
-					first = 0;
-					break;
-				}
-
 				imageBlock.startX = topX;
 				imageBlock.endX   = bottomX;
 				imageBlock.startY = topY;
@@ -134,6 +127,8 @@ ImageBlockArray charDetection_blocks(SDL_Surface *surface)
 				imageBlock.lines = charDetection_go(
 					surface, topX, topY, bottomX, bottomY
 				);
+
+				push_ImageBlockArray(&blockArray, imageBlock);
 			}
 		}
 	}

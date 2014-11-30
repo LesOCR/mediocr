@@ -113,11 +113,6 @@ int startImageProcessing(char *path)
 
 	image_display(surface);
 
-	surface = filter_createGroup(surface);
-	surface = filter_blur(surface);
-	surface = filter_createGroup(surface);
-	surface = filter_blur(surface);
-
 	image_display(filter_createGroup(surface));
 
 	return 1;

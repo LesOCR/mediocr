@@ -22,7 +22,6 @@ struct charRecognition *charRecognition_learn(char *rootPath,
 	unsigned count = 0;
 	for(unsigned i = 0; i < size; i++) {
 		for(unsigned j = 0; j < variants; j++) {
-			printf("start..\n");
 			char *path = string_concatChar(rootPath, chars[i]);
 			path = string_concat(path, "/");
 			char filename[5];
@@ -32,8 +31,6 @@ struct charRecognition *charRecognition_learn(char *rootPath,
 			SDL_Surface *s = image_scale(
 				image_load(path),
 				16, 16);
-
-			image_display(s);
 
 			for (unsigned k = 0; k < 16; k++)
 				for (unsigned l = 0; l < 16; l++)
@@ -47,7 +44,7 @@ struct charRecognition *charRecognition_learn(char *rootPath,
 		}
 	}
 
-	NeuralNetwork_train(myNeuralNetwork, input, output, 0.01, 0.001,
+	NeuralNetwork_train(myNeuralNetwork, input, output, 0.001, 0.01,
 				0.00001);
 	charReg->letters = chars;
 	charReg->size    = size;

@@ -33,7 +33,7 @@ SDL_Surface *filter_createGroup(SDL_Surface *s)
 
 	for(int y = 0; y < s->h; y++) {
 		for(int x = 0; x < s->w; x++) {
-			SDL_Color color = _filter_createGroup_work(s, 3, 1, x, y);
+			SDL_Color color = _filter_createGroup_work(s, 9, 1, x, y);
 
 			image_putPixel(new, x, y, SDL_MapRGBA(new->format, color.r, color.g, color.b, 255));
 		}
@@ -50,11 +50,15 @@ SDL_Color _filter_createGroup_work(SDL_Surface *s, unsigned matrixSize, unsigned
 	unsigned offset = matrixSize / 2;
 	for(unsigned i = 0; i < matrixSize; i++) {
 		for(unsigned j = 0; j < matrixSize; j++) {
-			int xloc = maths_between(x + i - offset, 0, s->w);
-			int yloc = maths_between(y + j - offset, 0, s->h);
+			int xloc = maths_between(x + i - offset, 0, s->w - 1);
+			int yloc = maths_between(y + j - offset, 0, s->h - 1);
 
 			if (image_getPixelBool(s, xloc, yloc))
 			{
+				if(yloc > s->h - 10) {
+					SDL_Color c = image_getPixelColor(s, xloc, yloc);
+					printf("%d: %d - %d,%d,%d\n", xloc, yloc, c.r, c.g, c.b);
+				}
 				nbAround++;
 			}
 

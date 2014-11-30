@@ -32,8 +32,8 @@ SDL_Color convolution_dowork(SDL_Surface *s, int *matrix, unsigned matrixSize,
 	unsigned offset = matrixSize / 2;
 	for(unsigned i = 0; i < matrixSize; i++) {
 		for(unsigned j = 0; j < matrixSize; j++) {
-			int xloc = maths_between(x + i - offset, 0, s->w);
-			int yloc = maths_between(y + j - offset, 0, s->h);
+			int xloc = maths_between(x + i - offset, 0, s->w - 1);
+			int yloc = maths_between(y + j - offset, 0, s->h - 1);
 
 			SDL_Color color = image_getPixelColor(s, xloc, yloc);
 

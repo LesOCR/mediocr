@@ -50,8 +50,6 @@ SDL_Surface* image_display(SDL_Surface *img)
 
 SDL_Surface *image_copy(SDL_Surface *surf)
 {
-	SDL_LockSurface(surf);
-
 	SDL_Surface *res;
 
 	res = SDL_CreateRGBSurface(surf->flags, surf->w, surf->h,
@@ -59,15 +57,9 @@ SDL_Surface *image_copy(SDL_Surface *surf)
 		surf->format->Gmask, surf->format->Bmask,
 		surf->format->Amask);
 
-	SDL_LockSurface(res);
-
 	if(res != NULL) {
 		SDL_BlitSurface(surf, NULL, res, NULL);
 	}
-
-	SDL_UnlockSurface(res);
-
-	SDL_UnlockSurface(surf);
 
 	return res;
 }
