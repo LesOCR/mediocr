@@ -124,7 +124,7 @@ double NeuralNetwork_backPropagate(struct NeuralNetwork *neuralNetwork,
 			error +=
 			    outputDeltas.elements[k] *
 			    neuralNetwork->weightOutput.elements[j].elements[k];
-				
+
 		hiddenDeltas.elements[j] =
 		    maths_dsigmoid(
 			neuralNetwork->activationHidden.elements[j]) *
@@ -198,6 +198,11 @@ void NeuralNetwork_train(struct NeuralNetwork *neuralNetwork,
 	} while (fabs(error) > threshold);
 
 	printf("Final error ratio: %g\n", error);
+
+	printf("final weights: \n");
+	NeuralNetwork_serializeWeightsInput(neuralNetwork);
+	NeuralNetwork_serializeWeightsOutput(neuralNetwork);
+
 }
 
 void NeuralNetwork_test(struct NeuralNetwork *neuralNetwork,

@@ -15,9 +15,6 @@ SDL_Surface *convolution_apply(SDL_Surface *s, int *matrix, unsigned matrixSize,
 		for(int x = 0; x < s->w; x++) {
 			SDL_Color color = convolution_dowork(s, matrix, matrixSize, divider, x, y);
 
-			// SDL_Color tcolor = image_getPixelColor(s, x, y);
-			// printf("cur color: %d,%d,%d\n", color.r, color.g, color.b);
-
 			image_putPixel(new, x, y, SDL_MapRGBA(new->format, color.r, color.g, color.b, 255));
 		}
 	}

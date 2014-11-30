@@ -11,6 +11,7 @@
 #include "utils/types/arrays.h"
 #include "utils/image/image.h"
 #include "utils/image/convolution.h"
+#include "utils/image/filters.h"
 #include "utils/image/charDetection.h"
 #include "utils/types/structArrays.h"
 
@@ -57,7 +58,7 @@ int testMultiNeuralNetwork()
 	output.elements[3].elements[0] = 0;
 	output.elements[3].elements[1] = 1;
 
-	NeuralNetwork_train(myNeuralNetwork, input, output, 0.00001, 0.5, 0.1);
+	NeuralNetwork_train(myNeuralNetwork, input, output, 0.008, 0.5, 0.1);
 
 	NeuralNetwork_test(myNeuralNetwork, input);
 
@@ -76,10 +77,8 @@ int testMultiNeuralNetwork()
 
 int startNeuralNetworkChar(char *charsInput, char *characters, char *read)
 {
-	SDL_Surface *surface = image_load(charsInput);
-
 	struct charRecognition *charRecog =
-	    charRecognition_learn(surface, characters, strlen(characters));
+	    charRecognition_learn(charsInput, characters, strlen(characters), 1);
 
 	SDL_Surface *text = image_load(read);
 	ImageBlockArray imageBlock = charDetection_blocks(text);
@@ -114,13 +113,12 @@ int startImageProcessing(char *path)
 
 	image_display(surface);
 
-	int convolution_blur[9] = {
-		1, 1, 1,
-		8, 1, 8,
-		8, 1, 8
-	};
+	surface = filter_createGroup(surface);
+	surface = filter_blur(surface);
+	surface = filter_createGroup(surface);
+	surface = filter_blur(surface);
 
-	image_display(convolution_apply(surface, &convolution_blur[0], 3, 30));
+	image_display(filter_createGroup(surface));
 
 	return 1;
 }
@@ -135,7 +133,7 @@ void outputHelp()
 	printf(" Options:\n");
 	printf(" -m: Mode: [live|neuralnetwork|chardetection]\n");
 	printf(" -f: Path of the file that needs to be processed.\n");
-	printf(" -c: Path of the file used by the neural network to learn.\n");
+	printf(" -c: Path to the directory containing the letters used to learn.\n");
 	printf(" -s: String containing the chars in the file used to learn.\n");
 	printf(" -h: Show this wonderful help.\n");
 	printf("---------------------------------------------------------------"
@@ -149,7 +147,7 @@ int main(int argc, char *argv[])
 	int c;
 	char *mode = "live";
 	char *filePath = NULL;
-	char *charPath = "data/text/caps.bmp";
+	char *charPath = "data/letters/";
 	char *charList = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 
 	while ((c = getopt(argc, argv, "m:f:c:s:h")) != -1) {
@@ -180,7 +178,7 @@ int main(int argc, char *argv[])
 			err(1, "Error during the neural network instance.");
 	} else if (strcmp(mode, "chardetection") == 0) {
 		if (filePath == NULL)
-			//filePath = "data/images/homer.bmp";
+			filePath = "data/images/homer.bmp";
 			filePath = "data/text/alphabetfonts.bmp";
 
 		if (!startImageProcessing(filePath))

@@ -1,54 +1,53 @@
 #include <SDL/SDL.h>
 #include <math.h>
 
+#include "../helpers/strings.h"
 #include "neuralNetwork.h"
 #include "../types/arrays.h"
 #include "../image/image.h"
 #include "charRecognition.h"
 
-struct charRecognition *charRecognition_learn(SDL_Surface *surface,
-						  char chars[], size_t size)
+struct charRecognition *charRecognition_learn(char *rootPath,
+						  char chars[], size_t size, size_t variants)
 {
 	struct charRecognition *charReg =
 		malloc(sizeof(struct charRecognition));
 
-	ImageBlockArray imageBlockArray = charDetection_blocks(surface);
-
 	struct NeuralNetwork *myNeuralNetwork =
 		neuralNetwork_main(256, 10, size);
 
-	unsignedArray2D input = new_unsignedArray2D(size, 256);
-	unsignedArray2D output = new_unsignedArray2D(size, size);
+	unsignedArray2D input = new_unsignedArray2D(size * variants, 256);
+	unsignedArray2D output = new_unsignedArray2D(size * variants, size);
 
-	printf("blocks: %d\n", imageBlockArray.size);
+	unsigned count = 0;
+	for(unsigned i = 0; i < size; i++) {
+		for(unsigned j = 0; j < variants; j++) {
+			printf("start..\n");
+			char *path = string_concatChar(rootPath, chars[i]);
+			path = string_concat(path, "/");
+			char filename[5];
+			sprintf(filename, "%d", j);
+			path = string_concat(path, filename);
+			path = string_concat(path, ".bmp");
+			SDL_Surface *s = image_scale(
+				image_load(path),
+				16, 16);
 
-	for(unsigned h = 0; h < imageBlockArray.size; h++) {
-		ImageLineArray imageLineArray = imageBlockArray.elements[h].lines;
-		for (unsigned i = 0; i < imageLineArray.size; i++) {
-			for (unsigned j = 0;
-				j < imageLineArray.elements[i].chars.size; j++) {
-				SDL_Surface *s = image_scale(
-					image_extractChar(
-					surface, &imageLineArray.elements[i]
-					.chars.elements[j]),
-					16, 16);
+			image_display(s);
 
-				image_display(s);
+			for (unsigned k = 0; k < 16; k++)
+				for (unsigned l = 0; l < 16; l++)
+					input.elements[count].elements[k + l * 16] =
+						image_getPixelBool(s, k, l);
 
-				for (unsigned k = 0; k < 16; k++)
-					for (unsigned l = 0; l < 16; l++)
-						input.elements[j + i * 16]
-							.elements[k + l * 16] =
-							image_getPixelBool(s, k, l);
+			for(unsigned k = 0; k < size; k++)
+				output.elements[count].elements[k] = ((count % size) == k);
 
-				for(unsigned h = 0; h < size; h++)
-					output.elements[j + i * 16].elements[h] =
-					(j + i * 16 == h);
-			}
+			count++;
 		}
 	}
 
-	NeuralNetwork_train(myNeuralNetwork, input, output, 0.0001, 0.001,
+	NeuralNetwork_train(myNeuralNetwork, input, output, 0.01, 0.001,
 				0.00001);
 	charReg->letters = chars;
 	charReg->size    = size;

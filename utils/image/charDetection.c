@@ -2,6 +2,7 @@
 
 #include "image.h"
 #include "convolution.h"
+#include "filters.h"
 #include "../types/structArrays.h"
 #include "charDetection.h"
 
@@ -94,12 +95,11 @@ unsigned charDetection_char(SDL_Surface *surface, struct ImageLine imageLine,
 
 ImageBlockArray charDetection_blocks(SDL_Surface *surface)
 {
-	int matrix[9] = {
-		1, 1, 1,
-		1, 1, 1,
-		1, 1, 1
-	};
-	SDL_Surface *blurredSurface = convolution_apply(surface, &matrix[0], 9);
+	SDL_Surface *blurredSurface = filter_createGroup(surface);
+	blurredSurface = filter_blur(blurredSurface);
+	blurredSurface = filter_createGroup(blurredSurface);
+	blurredSurface = filter_blur(blurredSurface);
+	blurredSurface = filter_createGroup(blurredSurface);
 
 	ImageBlockArray blockArray = new_ImageBlockArray(1);
 	struct ImageBlock imageBlock;
@@ -134,8 +134,6 @@ ImageBlockArray charDetection_blocks(SDL_Surface *surface)
 				imageBlock.lines = charDetection_go(
 					surface, topX, topY, bottomX, bottomY
 				);
-
-				printf("blocks: %d\n", blockArray.size);
 			}
 		}
 	}

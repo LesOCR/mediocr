@@ -17,8 +17,8 @@ struct charRecognitionList {
 	struct charRecognitionList *next;
 };
 
-struct charRecognition *charRecognition_learn(SDL_Surface *surface,
-						  char chars[], size_t size);
+struct charRecognition *charRecognition_learn(char *rootPath,
+	char chars[], size_t size, size_t variants);
 char charRecognition_getChar(struct charRecognition *list,
 			     SDL_Surface *surface);
 
