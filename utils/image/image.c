@@ -123,6 +123,106 @@ SDL_Surface *image_extractChar(SDL_Surface *surface, struct ImageChar *c)
 	return newSurface;
 }
 
+SDL_Surface *image_crop(SDL_Surface *surface)
+{
+	unsigned topX = _image_cropLeft(surface);
+	unsigned topY = _image_cropTop(surface);
+	unsigned bottomY = _image_cropBottom(surface) + 1;
+	unsigned bottomX = _image_cropRight(surface) + 1;
+	unsigned width = bottomX - topX;
+	unsigned height = bottomY - topY;
+
+	printf("%d:%d - %d:%d\n", topX, topY, bottomX, bottomY);
+
+	SDL_Surface *newSurface = SDL_CreateRGBSurface(
+	    surface->flags, width, height, surface->format->BitsPerPixel,
+	    surface->format->Rmask, surface->format->Gmask,
+	    surface->format->Bmask, surface->format->Amask);
+
+	SDL_Rect rectMask = {.x = (Sint16)topX,
+			     .y = (Sint16)topY,
+			     .w = (Sint16)width,
+			     .h = (Sint16)height};
+
+	int r = SDL_BlitSurface(surface, &rectMask, newSurface, NULL);
+	if (r)
+		return 0;
+
+	return newSurface;
+}
+unsigned _image_cropTop(SDL_Surface *surface)
+{
+	unsigned top = 0;
+
+	for(unsigned y = 0; y < (unsigned)surface->h; y++)
+	{
+		for(unsigned x = 0; x < (unsigned)surface->w; x++)
+		{
+			if(image_getPixelBool(surface, x, y))
+				return top;
+		}
+
+		top++;
+	}
+
+	return top;
+}
+unsigned _image_cropBottom(SDL_Surface *surface)
+{
+	unsigned bottom = surface->h - 1;
+
+	for(unsigned y = surface->h - 1; y > 0; y--)
+	{
+		for(unsigned x = 0; x < (unsigned)surface->w; x++)
+		{
+			if(image_getPixelBool(surface, x, y))
+			{
+				return bottom;
+			}
+		}
+
+		bottom--;
+	}
+
+	return bottom;
+}
+unsigned _image_cropLeft(SDL_Surface *surface)
+{
+	unsigned left = 0;
+
+	for(unsigned x = 0; x < (unsigned)surface->w; x++)
+	{
+		for(unsigned y = 0; y < (unsigned)surface->h; y++)
+		{
+			if(image_getPixelBool(surface, x, y))
+				return left;
+		}
+
+		left++;
+	}
+
+	return left;
+}
+unsigned _image_cropRight(SDL_Surface *surface)
+{
+	unsigned right = surface->w - 1;
+
+	for(unsigned x = surface->w - 1; x > 0; x--)
+	{
+		for(unsigned y = 0; y < (unsigned)surface->h; y++)
+		{
+			if(image_getPixelBool(surface, x, y))
+			{
+				return right;
+			}
+		}
+
+		right--;
+	}
+
+	return right;
+}
+
 SDL_Color image_getPixelColor(SDL_Surface *surface, unsigned x, unsigned y)
 {
 	Uint32 intColor = image_getPixelUint32(surface, x, y);

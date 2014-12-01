@@ -29,7 +29,7 @@ struct charRecognition *charRecognition_learn(char *rootPath,
 			path = string_concat(path, filename);
 			path = string_concat(path, ".bmp");
 			SDL_Surface *s = image_scale(
-				image_load(path),
+				image_crop(image_load(path)),
 				16, 16);
 
 			for (unsigned k = 0; k < 16; k++)

@@ -11,6 +11,12 @@ SDL_Surface *image_load(char *path);
 SDL_Surface *image_scale(SDL_Surface *Surface, Uint16 Width, Uint16 Height);
 SDL_Surface *image_extractChar(SDL_Surface *surface, struct ImageChar *c);
 
+SDL_Surface *image_crop(SDL_Surface *surf);
+unsigned _image_cropTop(SDL_Surface *surface);
+unsigned _image_cropBottom(SDL_Surface *surface);
+unsigned _image_cropLeft(SDL_Surface *surface);
+unsigned _image_cropRight(SDL_Surface *surface);
+
 Uint32 image_getPixelUint32(SDL_Surface *surface, unsigned x, unsigned y);
 SDL_Color image_getPixelColor(SDL_Surface *surface, unsigned x, unsigned y);
 unsigned image_getGreyscale(SDL_Color color);
