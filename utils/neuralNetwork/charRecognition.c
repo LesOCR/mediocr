@@ -45,8 +45,8 @@ struct charRecognition *charRecognition_learn(char *rootPath,
 		}
 	}
 
-	NeuralNetwork_train(myNeuralNetwork, input, output, 0.001, 0.01,
-				0.00001);
+	NeuralNetwork_train(myNeuralNetwork, input, output, 0.0001, 0.1,
+				0.1);
 	charReg->letters = chars;
 	charReg->size    = size;
 	charReg->network = myNeuralNetwork;
@@ -61,7 +61,7 @@ struct charRecognition *charRecognition_learnWeights(char *pathIn, char *pathOut
 		malloc(sizeof(struct charRecognition));
 
 	struct NeuralNetwork *myNeuralNetwork =
-		neuralNetwork_main(256, 10, size);
+		neuralNetwork_main(256, 6, size);
 
 	NeuralNetwork_loadWeightInput(myNeuralNetwork, file_get_contents(pathIn));
 	NeuralNetwork_loadWeightOutput(myNeuralNetwork, file_get_contents(pathOut));

@@ -35,7 +35,42 @@ int startLearning(char *charsInput, char *characters)
 	return 1;
 }
 
-int startNeuralNetworkChar(char *pathIn, char *pathOut, size_t size, char *read)
+int startNeuralTest(char *charsInput, char *characters, char *read)
+{
+	struct charRecognition *charRecog =
+	    charRecognition_learn(charsInput, characters, strlen(characters), 1);
+
+	SDL_Surface *text = image_load(read);
+	ImageBlockArray imageBlock = charDetection_blocks(text);
+	printf("Recognized string: \n");
+	for(unsigned h = 0; h < imageBlock.size; h++) {
+		printf("\n\n");
+		ImageLineArray imageLine = imageBlock.elements[h].lines;
+		for (unsigned i = 0; i < imageLine.size; i++) {
+			printf("\n");
+			for (unsigned j = 0; j < imageLine.elements[i].chars.size;
+				j++) {
+				struct ImageChar imageChar = imageLine.elements[i].chars.elements[j];
+				SDL_Surface *s = image_scale(
+					image_extractChar(
+						text, &imageChar),
+					16, 16);
+
+				//image_display(s);
+
+				imageChar.content = charRecognition_getChar(charRecog, s);
+
+				printf("%c", charRecognition_getChar(charRecog, s));
+			}
+		}
+	}
+
+	printf("\n");
+
+	return 1;
+}
+
+int startLive(char *pathIn, char *pathOut, size_t size, char *read)
 {
 	struct charRecognition *charRecog = charRecognition_learnWeights(pathIn, pathOut, size);
 
@@ -83,9 +118,9 @@ void outputHelp()
 	       "----------------------------------\n");
 	printf(" Authors: Manuel HUEZ, Louis-Paul DAREAU, Erenus DERMANCI, "
 	       "Cyril CHEMLA\n");
-	printf(" Version: 1.0.0.0\n\n");
+	printf(" Version: 0.2.0.0\n\n");
 	printf(" Options:\n");
-	printf(" -m: Mode: [live|learn|chardetection]\n");
+	printf(" -m: Mode: [live|learn|learnNprocess|imageprocessing]\n");
 	printf(" -f: Path of the file that needs to be processed.\n");
 	printf(" -w: Path of the directory containing the weights.\n");
 	printf(" -c: Path to the directory containing the letters used to learn.\n");
@@ -100,7 +135,7 @@ void outputHelp()
 int main(int argc, char *argv[])
 {
 	int c;
-    char *mode       = "live";
+    char *mode       = "";
     char *filePath   = "data/text/alphabetfonts.bmp";
     char *charPath   = "data/letters/";
     char *weightsIn  = "data/weights/in.mediocr";
@@ -133,15 +168,20 @@ int main(int argc, char *argv[])
 	if (!setup())
 		err(1, "Error during the initial setup.");
 
-	if (strcmp(mode, "chardetection") == 0) {
+	if (strcmp(mode, "imageprocessing") == 0) {
 		if (!startImageProcessing(filePath))
 			err(1, "Error during the image processing.");
+	} else if(strcmp(mode, "learnNprocess") == 0) {
+		if (!startNeuralTest(charPath, charList, filePath))
+			err(1, "Error during the testing of the neural network.");
 	} else if(strcmp(mode, "learn") == 0) {
 		if (!startLearning(charPath, charList))
 			err(1, "Error during the learn stage.");
+	} else if(strcmp(mode, "live") == 0) {
+		if (!startLive(weightsIn, weightsOut, strlen(charList), filePath))
+			err(1, "Error during the real neural network instance.");
 	} else {
-		if (!startNeuralNetworkChar(weightsIn, weightsOut, strlen(charList), filePath))
-			err(1, "Error during the real neural network instance");
+		outputHelp();
 	}
 
 	printf("MediOCR ended! \n");

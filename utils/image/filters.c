@@ -27,6 +27,17 @@ SDL_Surface *filter_sharpen(SDL_Surface *s)
 	return convolution_apply(s, &convolution[0], 3, 3);
 }
 
+SDL_Surface *filter_edge(SDL_Surface *s)
+{
+	int convolution[9] = {
+		0, 0, 0,
+		-1, 1, 0,
+		0, 0, 0
+	};
+
+	return convolution_apply(s, &convolution[0], 3, 3);
+}
+
 SDL_Surface *filter_createGroup(SDL_Surface *s)
 {
 	SDL_Surface *new = image_copy(s);

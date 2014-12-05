@@ -120,7 +120,7 @@ SDL_Surface *image_extractChar(SDL_Surface *surface, struct ImageChar *c)
 	if (r)
 		return 0;
 
-	return newSurface;
+	return image_crop(newSurface);
 }
 
 SDL_Surface *image_crop(SDL_Surface *surface)
@@ -131,8 +131,6 @@ SDL_Surface *image_crop(SDL_Surface *surface)
 	unsigned bottomX = _image_cropRight(surface) + 1;
 	unsigned width = bottomX - topX;
 	unsigned height = bottomY - topY;
-
-	printf("%d:%d - %d:%d\n", topX, topY, bottomX, bottomY);
 
 	SDL_Surface *newSurface = SDL_CreateRGBSurface(
 	    surface->flags, width, height, surface->format->BitsPerPixel,
