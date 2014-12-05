@@ -45,7 +45,7 @@ struct charRecognition *charRecognition_learn(char *rootPath,
 		}
 	}
 
-	NeuralNetwork_train(myNeuralNetwork, input, output, 0.1, 0.01,
+	NeuralNetwork_train(myNeuralNetwork, input, output, 0.001, 0.01,
 				0.00001);
 	charReg->letters = chars;
 	charReg->size    = size;
