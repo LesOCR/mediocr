@@ -191,7 +191,7 @@ void NeuralNetwork_train(struct NeuralNetwork *neuralNetwork,
 			    momentumFactor);
 		}
 
-		if(!(++step % 10000))
+		if(!(++step % 100))
 		{
 			printf("Error ratio: %g\n", error);
 			step = 0;

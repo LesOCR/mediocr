@@ -27,7 +27,7 @@ int setup()
 int startLearning(char *charsInput, char *characters)
 {
 	struct charRecognition *charRecog =
-	    charRecognition_learn(charsInput, characters, strlen(characters), 1);
+	    charRecognition_learn(charsInput, characters, strlen(characters), 3);
 
 	printf("Serialized input weights: \n%s\n", NeuralNetwork_serializeWeightsInput(charRecog->network));
 	printf("Serialized output weights: \n%s\n", NeuralNetwork_serializeWeightsOutput(charRecog->network));
@@ -38,7 +38,7 @@ int startLearning(char *charsInput, char *characters)
 int startNeuralTest(char *charsInput, char *characters, char *read)
 {
 	struct charRecognition *charRecog =
-	    charRecognition_learn(charsInput, characters, strlen(characters), 1);
+	    charRecognition_learn(charsInput, characters, strlen(characters), 3);
 
 	SDL_Surface *text = image_load(read);
 	ImageBlockArray imageBlock = charDetection_blocks(text);
@@ -140,7 +140,7 @@ int main(int argc, char *argv[])
     char *charPath   = "data/letters/";
     char *weightsIn  = "data/weights/in.mediocr";
     char *weightsOut = "data/weights/out.mediocr";
-    char *charList   = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+    char *charList   = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
 
 	while ((c = getopt(argc, argv, "m:f:wi:wo:c:s:h")) != -1) {
 		switch (c) {
