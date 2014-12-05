@@ -2,6 +2,7 @@
 #include <math.h>
 
 #include "../helpers/strings.h"
+#include "../helpers/file.h"
 #include "neuralNetwork.h"
 #include "../types/arrays.h"
 #include "../image/image.h"
@@ -44,11 +45,26 @@ struct charRecognition *charRecognition_learn(char *rootPath,
 		}
 	}
 
-	NeuralNetwork_train(myNeuralNetwork, input, output, 0.001, 0.01,
+	NeuralNetwork_train(myNeuralNetwork, input, output, 0.1, 0.01,
 				0.00001);
 	charReg->letters = chars;
 	charReg->size    = size;
 	charReg->network = myNeuralNetwork;
+
+	return charReg;
+}
+
+struct charRecognition *charRecognition_learnWeights(char *pathIn, char *pathOut,
+	size_t size)
+{
+	struct charRecognition *charReg =
+		malloc(sizeof(struct charRecognition));
+
+	struct NeuralNetwork *myNeuralNetwork =
+		neuralNetwork_main(256, 10, size);
+
+	NeuralNetwork_loadWeightInput(myNeuralNetwork, file_get_contents(pathIn));
+	NeuralNetwork_loadWeightOutput(myNeuralNetwork, file_get_contents(pathOut));
 
 	return charReg;
 }

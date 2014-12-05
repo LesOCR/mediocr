@@ -6,6 +6,7 @@
 #include <unistd.h>
 #include <getopt.h>
 
+#include "utils/helpers/strings.h"
 #include "utils/neuralNetwork/neuralNetwork.h"
 #include "utils/neuralNetwork/charRecognition.h"
 #include "utils/types/arrays.h"
@@ -22,63 +23,21 @@ int setup()
 	return 1;
 }
 
-int testMultiNeuralNetwork()
+
+int startLearning(char *charsInput, char *characters)
 {
-	struct NeuralNetwork *myNeuralNetwork = neuralNetwork_main(4, 2, 2);
+	struct charRecognition *charRecog =
+	    charRecognition_learn(charsInput, characters, strlen(characters), 1);
 
-	unsignedArray2D input = new_unsignedArray2D(4, 4);
-	unsignedArray2D output = new_unsignedArray2D(4, 2);
-
-	input.elements[0].elements[0] = 1;
-	input.elements[0].elements[1] = 0;
-	input.elements[0].elements[2] = 0;
-	input.elements[0].elements[3] = 0;
-
-	input.elements[1].elements[0] = 0;
-	input.elements[1].elements[1] = 1;
-	input.elements[1].elements[2] = 0;
-	input.elements[1].elements[3] = 0;
-
-	input.elements[2].elements[0] = 0;
-	input.elements[2].elements[1] = 0;
-	input.elements[2].elements[2] = 1;
-	input.elements[2].elements[3] = 0;
-
-	input.elements[3].elements[0] = 0;
-	input.elements[3].elements[1] = 0;
-	input.elements[3].elements[2] = 0;
-	input.elements[3].elements[3] = 1;
-
-	output.elements[0].elements[0] = 1;
-	output.elements[0].elements[1] = 0;
-	output.elements[1].elements[0] = 1;
-	output.elements[1].elements[1] = 0;
-	output.elements[2].elements[0] = 0;
-	output.elements[2].elements[1] = 1;
-	output.elements[3].elements[0] = 0;
-	output.elements[3].elements[1] = 1;
-
-	NeuralNetwork_train(myNeuralNetwork, input, output, 0.008, 0.5, 0.1);
-
-	NeuralNetwork_test(myNeuralNetwork, input);
-
-	char *serializedInput =
-	NeuralNetwork_serializeWeightsInput(myNeuralNetwork);
-	char *serializedOutput =
-	NeuralNetwork_serializeWeightsOutput(myNeuralNetwork);
-	printf("Serialized input weights: \n%s\n", serializedInput);
-	printf("Serialized output weights: \n%s\n", serializedOutput);
-	printf("Unserializing:\n");
-	NeuralNetwork_loadWeightInput(myNeuralNetwork, serializedInput);
-	printf("Done! (loaded into the neural network)\n");
+	printf("Serialized input weights: \n%s\n", NeuralNetwork_serializeWeightsInput(charRecog->network));
+	printf("Serialized output weights: \n%s\n", NeuralNetwork_serializeWeightsOutput(charRecog->network));
 
 	return 1;
 }
 
-int startNeuralNetworkChar(char *charsInput, char *characters, char *read)
+int startNeuralNetworkChar(char *pathIn, char *pathOut, size_t size, char *read)
 {
-	struct charRecognition *charRecog =
-	    charRecognition_learn(charsInput, characters, strlen(characters), 1);
+	struct charRecognition *charRecog = charRecognition_learnWeights(pathIn, pathOut, size);
 
 	SDL_Surface *text = image_load(read);
 	ImageBlockArray imageBlock = charDetection_blocks(text);
@@ -126,8 +85,9 @@ void outputHelp()
 	       "Cyril CHEMLA\n");
 	printf(" Version: 1.0.0.0\n\n");
 	printf(" Options:\n");
-	printf(" -m: Mode: [live|neuralnetwork|chardetection]\n");
+	printf(" -m: Mode: [live|learn|chardetection]\n");
 	printf(" -f: Path of the file that needs to be processed.\n");
+	printf(" -w: Path of the directory containing the weights.\n");
 	printf(" -c: Path to the directory containing the letters used to learn.\n");
 	printf(" -s: String containing the chars in the file used to learn.\n");
 	printf(" -h: Show this wonderful help.\n");
@@ -140,12 +100,14 @@ void outputHelp()
 int main(int argc, char *argv[])
 {
 	int c;
-	char *mode = "live";
-	char *filePath = NULL;
-	char *charPath = "data/letters/";
-	char *charList = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+    char *mode       = "live";
+    char *filePath   = "data/text/alphabetfonts.bmp";
+    char *charPath   = "data/letters/";
+    char *weightsIn  = "data/weights/in.mediocr";
+    char *weightsOut = "data/weights/out.mediocr";
+    char *charList   = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 
-	while ((c = getopt(argc, argv, "m:f:c:s:h")) != -1) {
+	while ((c = getopt(argc, argv, "m:f:wi:wo:c:s:h")) != -1) {
 		switch (c) {
 		case 'm':
 			mode = optarg;
@@ -153,6 +115,9 @@ int main(int argc, char *argv[])
 		case 'f':
 			filePath = optarg;
 			break;
+		case 'w':
+			weightsIn = string_concat(optarg, "/in.mediocr");
+			weightsOut = string_concat(optarg, "/out.mediocr");
 		case 'c':
 			charPath = optarg;
 			break;
@@ -168,21 +133,14 @@ int main(int argc, char *argv[])
 	if (!setup())
 		err(1, "Error during the initial setup.");
 
-	if (strcmp(mode, "neuralnetwork") == 0) {
-		if (!testMultiNeuralNetwork())
-			err(1, "Error during the neural network instance.");
-	} else if (strcmp(mode, "chardetection") == 0) {
-		if (filePath == NULL)
-			filePath = "data/images/homer.bmp";
-			filePath = "data/text/alphabetfonts.bmp";
-
+	if (strcmp(mode, "chardetection") == 0) {
 		if (!startImageProcessing(filePath))
 			err(1, "Error during the image processing.");
+	} else if(strcmp(mode, "learn") == 0) {
+		if (!startLearning(charPath, charList))
+			err(1, "Error during the learn stage.");
 	} else {
-		if (filePath == NULL)
-			filePath = "data/text/bigcaps.bmp";
-
-		if (!startNeuralNetworkChar(charPath, charList, filePath))
+		if (!startNeuralNetworkChar(weightsIn, weightsOut, strlen(charList), filePath))
 			err(1, "Error during the real neural network instance");
 	}
 
