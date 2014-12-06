@@ -50,17 +50,19 @@ unsigned charDetection_line(SDL_Surface *surface, struct ImageLine *imageLine,
 }
 
 unsigned charDetection_char(SDL_Surface *surface, struct ImageLine imageLine,
-			    struct ImageChar *imageChar, unsigned startX)
+			    struct ImageChar *imageChar, unsigned startX, unsigned start)
 {
 	int topX = surface->w;
 	int topY = surface->h;
 	int bottomX, bottomY;
 	bottomX = bottomY = -1;
 	unsigned detectedChar = 0;
+	unsigned spaceCount = 0;
 	for (int x = startX; x < (int)imageLine.endX; x++) {
 		unsigned emptyColumn = 1;
 		for (int y = imageLine.startY; y < (int)imageLine.endY; y++) {
 			if (image_getPixelBool(surface, x, y)) {
+				spaceCount = 0;
 				emptyColumn = 0;
 				detectedChar = 1;
 				if (topX > x)
@@ -74,20 +76,30 @@ unsigned charDetection_char(SDL_Surface *surface, struct ImageLine imageLine,
 			}
 		}
 
+		if(emptyColumn && !start) {
+			spaceCount++;
+		}
+
 		// We're out of the current line, let's get out
-		if (emptyColumn && detectedChar)
+		if ((emptyColumn && detectedChar) || spaceCount > 5)
 			break;
 	}
 
 	// If we didn't detect anything
-	if (detectedChar == 0)
+	if (detectedChar == 0 && spaceCount <= 5)
 		return 0;
 
 	// We detected something, hura!
+	imageChar->space = 0;
 	imageChar->startX = topX;
 	imageChar->startY = topY;
 	imageChar->endX = ++bottomX;
 	imageChar->endY = ++bottomY;
+
+	if(spaceCount > 5) {
+        imageChar->space = 1;
+        imageChar->endX  = startX + spaceCount + 1;
+	}
 
 	return 1;
 }
@@ -174,11 +186,13 @@ ImageLineArray charDetection_go(SDL_Surface *surface, unsigned topX, unsigned to
 		ImageCharArray charArray = new_ImageCharArray(1);
 
 		struct ImageChar imageChar;
-		unsigned startX = 0;
+		unsigned startX = topX;
+		unsigned start = 1;
 
 		while (charDetection_char(surface, imageLine, &imageChar,
-					  startX) == 1) {
+					  startX, start) == 1) {
 			startX = imageChar.endX;
+			start = 0;
 			push_ImageCharArray(&charArray, imageChar);
 		}
 

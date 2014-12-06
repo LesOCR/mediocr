@@ -38,7 +38,7 @@ int startLearning(char *charsInput, char *characters)
 int startNeuralTest(char *charsInput, char *characters, char *read)
 {
 	struct charRecognition *charRecog =
-	    charRecognition_learn(charsInput, characters, strlen(characters), 3);
+	    charRecognition_learn(charsInput, characters, strlen(characters), 1);
 
 	SDL_Surface *text = image_load(read);
 	ImageBlockArray imageBlock = charDetection_blocks(text);
@@ -51,12 +51,16 @@ int startNeuralTest(char *charsInput, char *characters, char *read)
 			for (unsigned j = 0; j < imageLine.elements[i].chars.size;
 				j++) {
 				struct ImageChar imageChar = imageLine.elements[i].chars.elements[j];
+
+				if(imageChar.space) {
+					printf(" ");
+					continue;
+				}
+
 				SDL_Surface *s = image_scale(
 					image_extractChar(
 						text, &imageChar),
 					16, 16);
-
-				//image_display(s);
 
 				imageChar.content = charRecognition_getChar(charRecog, s);
 
@@ -136,11 +140,11 @@ int main(int argc, char *argv[])
 {
 	int c;
     char *mode       = "";
-    char *filePath   = "data/text/alphabetfonts.bmp";
+    char *filePath   = "data/text/verdana-caps.bmp";
     char *charPath   = "data/letters/";
     char *weightsIn  = "data/weights/in.mediocr";
     char *weightsOut = "data/weights/out.mediocr";
-    char *charList   = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+    char *charList   = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 
 	while ((c = getopt(argc, argv, "m:f:wi:wo:c:s:h")) != -1) {
 		switch (c) {
