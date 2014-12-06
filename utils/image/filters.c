@@ -66,10 +66,6 @@ SDL_Color _filter_createGroup_work(SDL_Surface *s, unsigned matrixSize, unsigned
 
 			if (image_getPixelBool(s, xloc, yloc))
 			{
-				if(yloc > s->h - 10) {
-					SDL_Color c = image_getPixelColor(s, xloc, yloc);
-					printf("%d: %d - %d,%d,%d\n", xloc, yloc, c.r, c.g, c.b);
-				}
 				nbAround++;
 			}
 

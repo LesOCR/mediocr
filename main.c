@@ -38,7 +38,7 @@ int startLearning(char *charsInput, char *characters)
 int startNeuralTest(char *charsInput, char *characters, char *read)
 {
 	struct charRecognition *charRecog =
-	    charRecognition_learn(charsInput, characters, strlen(characters), 1);
+	    charRecognition_learn(charsInput, characters, strlen(characters), 5);
 
 	SDL_Surface *text = image_load(read);
 	ImageBlockArray imageBlock = charDetection_blocks(text);
@@ -140,11 +140,11 @@ int main(int argc, char *argv[])
 {
 	int c;
     char *mode       = "";
-    char *filePath   = "data/text/verdana-caps.bmp";
+    char *filePath   = "data/text/UneColMultiFont_300.bmp";
     char *charPath   = "data/letters/";
     char *weightsIn  = "data/weights/in.mediocr";
     char *weightsOut = "data/weights/out.mediocr";
-    char *charList   = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+    char *charList   = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
 
 	while ((c = getopt(argc, argv, "m:f:wi:wo:c:s:h")) != -1) {
 		switch (c) {

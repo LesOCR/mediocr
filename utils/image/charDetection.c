@@ -50,7 +50,8 @@ unsigned charDetection_line(SDL_Surface *surface, struct ImageLine *imageLine,
 }
 
 unsigned charDetection_char(SDL_Surface *surface, struct ImageLine imageLine,
-			    struct ImageChar *imageChar, unsigned startX, unsigned start)
+			    struct ImageChar *imageChar, unsigned startX, unsigned start,
+				unsigned spaceSize)
 {
 	int topX = surface->w;
 	int topY = surface->h;
@@ -81,12 +82,12 @@ unsigned charDetection_char(SDL_Surface *surface, struct ImageLine imageLine,
 		}
 
 		// We're out of the current line, let's get out
-		if ((emptyColumn && detectedChar) || spaceCount > 5)
+		if ((emptyColumn && detectedChar) || spaceCount > spaceSize)
 			break;
 	}
 
 	// If we didn't detect anything
-	if (detectedChar == 0 && spaceCount <= 5)
+	if (detectedChar == 0 && spaceCount <= spaceSize)
 		return 0;
 
 	// We detected something, hura!
@@ -96,7 +97,7 @@ unsigned charDetection_char(SDL_Surface *surface, struct ImageLine imageLine,
 	imageChar->endX = ++bottomX;
 	imageChar->endY = ++bottomY;
 
-	if(spaceCount > 5) {
+	if(spaceCount > spaceSize) {
         imageChar->space = 1;
         imageChar->endX  = startX + spaceCount + 1;
 	}
@@ -108,10 +109,6 @@ unsigned charDetection_char(SDL_Surface *surface, struct ImageLine imageLine,
 ImageBlockArray charDetection_blocks(SDL_Surface *surface)
 {
 	SDL_Surface *blurredSurface = filter_createGroup(surface);
-	blurredSurface = filter_blur(blurredSurface);
-	blurredSurface = filter_createGroup(blurredSurface);
-	blurredSurface = filter_blur(blurredSurface);
-	blurredSurface = filter_createGroup(blurredSurface);
 
 	ImageBlockArray blockArray = new_ImageBlockArray(1);
 	struct ImageBlock imageBlock;
@@ -188,9 +185,12 @@ ImageLineArray charDetection_go(SDL_Surface *surface, unsigned topX, unsigned to
 		struct ImageChar imageChar;
 		unsigned startX = topX;
 		unsigned start = 1;
+		unsigned spaceSize = 0;
 
 		while (charDetection_char(surface, imageLine, &imageChar,
-					  startX, start) == 1) {
+					  startX, start, spaceSize) == 1) {
+			if(!spaceSize)
+				spaceSize = (imageChar.endX - startX) / 3.5;
 			startX = imageChar.endX;
 			start = 0;
 			push_ImageCharArray(&charArray, imageChar);

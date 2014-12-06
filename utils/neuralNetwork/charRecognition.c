@@ -15,7 +15,7 @@ struct charRecognition *charRecognition_learn(char *rootPath,
 		malloc(sizeof(struct charRecognition));
 
 	struct NeuralNetwork *myNeuralNetwork =
-		neuralNetwork_main(256, 350, size);
+		neuralNetwork_main(256, 450, size);
 
 	unsignedArray2D input = new_unsignedArray2D(size * variants, 256);
 	unsignedArray2D output = new_unsignedArray2D(size * variants, size);
@@ -41,13 +41,13 @@ struct charRecognition *charRecognition_learn(char *rootPath,
 						image_getPixelBool(s, k, l);
 
 			for(unsigned k = 0; k < size; k++)
-				output.elements[count].elements[k] = ((count % size) == k);
+				output.elements[count].elements[k] = ((count / variants) == k);
 
 			count++;
 		}
 	}
 
-	NeuralNetwork_train(myNeuralNetwork, input, output, 0.000000001, 0.1,
+	NeuralNetwork_train(myNeuralNetwork, input, output, 0.05, 0.1,
 				0.9);
 	charReg->letters = chars;
 	charReg->size    = size;

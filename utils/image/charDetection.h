@@ -38,7 +38,8 @@ struct ImageBlock {
 unsigned charDetection_line(SDL_Surface *surface, struct ImageLine *imageLine,
 	unsigned startX, unsigned stopX, unsigned startY, unsigned stopY);
 unsigned charDetection_char(SDL_Surface *surface, struct ImageLine imageLine,
-			    struct ImageChar *imageChar, unsigned startX, unsigned start);
+			    struct ImageChar *imageChar, unsigned startX, unsigned start,
+				unsigned spaceSize);
 void charDetection_blockRec(SDL_Surface *surface, int startX, int startY,
 	int *topX, int *topY, int *bottomX, int *bottomY);
 ImageBlockArray charDetection_blocks(SDL_Surface *surface);
