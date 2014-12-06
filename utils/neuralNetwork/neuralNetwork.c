@@ -200,11 +200,6 @@ void NeuralNetwork_train(struct NeuralNetwork *neuralNetwork,
 	} while (fabs(error) > threshold);
 
 	printf("Final error ratio: %g\n", error);
-
-	// printf("final weights: \n");
-	// printf("%s\n", NeuralNetwork_serializeWeightsInput(neuralNetwork));
-	// printf("%s\n", NeuralNetwork_serializeWeightsOutput(neuralNetwork));
-
 }
 
 void NeuralNetwork_test(struct NeuralNetwork *neuralNetwork,

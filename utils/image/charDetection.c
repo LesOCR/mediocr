@@ -108,6 +108,7 @@ unsigned charDetection_char(SDL_Surface *surface, struct ImageLine imageLine,
 
 ImageBlockArray charDetection_blocks(SDL_Surface *surface)
 {
+	surface = filter_binary(surface, 128);
 	SDL_Surface *blurredSurface = filter_createGroup(surface);
 
 	ImageBlockArray blockArray = new_ImageBlockArray(1);
@@ -190,9 +191,11 @@ ImageLineArray charDetection_go(SDL_Surface *surface, unsigned topX, unsigned to
 		while (charDetection_char(surface, imageLine, &imageChar,
 					  startX, start, spaceSize) == 1) {
 			if(!spaceSize)
-				spaceSize = (imageChar.endX - startX) / 3.5;
+				spaceSize = (imageChar.endX - startX) / 4;
 			startX = imageChar.endX;
 			start = 0;
+			if(imageChar.space)
+				start = 1;
 			push_ImageCharArray(&charArray, imageChar);
 		}
 

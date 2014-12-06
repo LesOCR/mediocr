@@ -262,8 +262,9 @@ double image_getGreyscaleRatio(SDL_Color color)
 
 unsigned image_getPixelBool(SDL_Surface *surface, unsigned x, unsigned y)
 {
-	return image_getGreyscaleRatio(image_getPixelColor(surface, x, y)) <
-	       0.5;
+	SDL_Color color = image_getPixelColor(surface, x, y);
+
+	return (color.r + color.g + color.b) / 3 < 128;
 }
 
 static inline Uint8 *pixelref(SDL_Surface *surf, unsigned x, unsigned y)
@@ -276,9 +277,7 @@ static inline Uint8 *pixelref(SDL_Surface *surf, unsigned x, unsigned y)
 
 Uint32 image_getPixelUint32(SDL_Surface *surface, unsigned x, unsigned y)
 {
-	SDL_LockSurface(surface);
 	Uint8 *p = pixelref(surface, x, y);
-	SDL_UnlockSurface(surface);
 	switch(surface->format->BytesPerPixel) {
 		case 1:
 		return *p;

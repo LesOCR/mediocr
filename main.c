@@ -62,6 +62,8 @@ int startNeuralTest(char *charsInput, char *characters, char *read)
 						text, &imageChar),
 					16, 16);
 
+				image_display(filter_binary(s, 128));
+
 				imageChar.content = charRecognition_getChar(charRecog, s);
 
 				printf("%c", charRecognition_getChar(charRecog, s));
@@ -78,7 +80,7 @@ int startLive(char *pathIn, char *pathOut, size_t size, char *read)
 {
 	struct charRecognition *charRecog = charRecognition_learnWeights(pathIn, pathOut, size);
 
-	SDL_Surface *text = image_load(read);
+	SDL_Surface *text = filter_blur(image_load(read));
 	ImageBlockArray imageBlock = charDetection_blocks(text);
 	printf("Recognized string: \n");
 	for(unsigned h = 0; h < imageBlock.size; h++) {
@@ -107,7 +109,7 @@ int startLive(char *pathIn, char *pathOut, size_t size, char *read)
 
 int startImageProcessing(char *path)
 {
-	SDL_Surface *surface = image_load(path);
+	SDL_Surface *surface = filter_binary(image_load(path), 128);
 
 	image_display(surface);
 
@@ -140,7 +142,7 @@ int main(int argc, char *argv[])
 {
 	int c;
     char *mode       = "";
-    char *filePath   = "data/text/UneColMultiFont_300.bmp";
+    char *filePath   = "data/text/part.bmp";
     char *charPath   = "data/letters/";
     char *weightsIn  = "data/weights/in.mediocr";
     char *weightsOut = "data/weights/out.mediocr";
