@@ -10,7 +10,7 @@ unsigned file_exists(char *path)
 	return access(path, F_OK) != -1;
 }
 
-char *file_get_contents(char *path)
+char *file_get_content(char *path)
 {
 	char *buffer = 0;
 	long length;
@@ -32,4 +32,17 @@ char *file_get_contents(char *path)
 	fclose (f);
 
 	return buffer;
+}
+
+void file_put_content(char *path, char *content)
+{
+	FILE *f = fopen(path, "w");
+	if (f == NULL)
+	{
+	    err(1, "The file could not be opened.");
+	    exit(1);
+	}
+
+	fprintf(f, "%s", content);
+	fclose(f);
 }

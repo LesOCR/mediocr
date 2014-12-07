@@ -65,8 +65,8 @@ struct charRecognition *charRecognition_learnWeights(char *pathIn, char *pathOut
 	struct NeuralNetwork *myNeuralNetwork =
 		neuralNetwork_main(256, 6, size);
 
-	NeuralNetwork_loadWeightInput(myNeuralNetwork, file_get_contents(pathIn));
-	NeuralNetwork_loadWeightOutput(myNeuralNetwork, file_get_contents(pathOut));
+	NeuralNetwork_loadWeightInput(myNeuralNetwork, file_get_content(pathIn));
+	NeuralNetwork_loadWeightOutput(myNeuralNetwork, file_get_content(pathOut));
 
 	return charReg;
 }
@@ -95,4 +95,39 @@ char charRecognition_getChar(struct charRecognition *charReg,
 	}
 
 	return bestChar;
+}
+
+char *charRecognition_getText(struct charRecognition *charReg, SDL_Surface *surface)
+{
+	char *recognized = "";
+
+	ImageBlockArray imageBlock = charDetection_blocks(surface);
+	for(unsigned h = 0; h < imageBlock.size; h++) {
+		ImageLineArray imageLine = imageBlock.elements[h].lines;
+		for (unsigned i = 0; i < imageLine.size; i++) {
+			for (unsigned j = 0; j < imageLine.elements[i].chars.size;
+				j++) {
+				struct ImageChar imageChar = imageLine.elements[i].chars.elements[j];
+
+				if(imageChar.space) {
+					recognized = string_concat(recognized, " ");
+					continue;
+				}
+
+				SDL_Surface *s = image_scale(
+					image_extractChar(
+						surface, &imageChar),
+					16, 16);
+
+				imageChar.content = charRecognition_getChar(charReg, s);
+
+				recognized = string_concatChar(recognized, tolower(charRecognition_getChar(charReg, s)));
+			}
+
+			recognized = string_concat(recognized, "\n");
+		}
+		recognized = string_concat(recognized, "\n");
+	}
+
+	return recognized;
 }
