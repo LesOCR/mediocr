@@ -12,7 +12,7 @@ char *wordCorrector_correct(char *pathWordlist, char *word)
 	FILE * fp;
    	char * line = NULL;
    	size_t len = 0;
-   	ssize_t read;
+   	int read;
 
    	fp = fopen(pathWordlist, "r");
    	if (fp == NULL)
