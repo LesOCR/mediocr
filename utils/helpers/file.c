@@ -18,7 +18,7 @@ char *file_get_content(char *path)
 
 	if (!f)
 	{
-	  	err(1, "The file could not be found.");
+	  	err(1, "The file could not be found [%s].", path);
 	}
 
 	fseek (f, 0, SEEK_END);

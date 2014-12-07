@@ -47,23 +47,23 @@ int testBlock(char *read)
 	return 1;
 }
 
-int startNeuralTest(char *charsInput, char *characters, int variant, char *read)
+int startNeuralTest(char *charsInput, char *characters, int variant, char *read, char *dic)
 {
 	struct charRecognition *charRecog =
 	    charRecognition_learn(charsInput, characters, strlen(characters), variant);
 
 	SDL_Surface *text = image_load(read);
-	printf("Recognized text: \n%s", charRecognition_getText(charRecog, text));
+	printf("Recognized text: \n%s", charRecognition_getText(charRecog, text, dic));
 
 	return 1;
 }
 
-int startLive(char *pathIn, char *pathOut, char *characters, char *read)
+int startLive(char *pathIn, char *pathOut, char *characters, char *read, char *dic)
 {
 	struct charRecognition *charRecog = charRecognition_learnWeights(pathIn,
 		pathOut, characters, strlen(characters));
 	SDL_Surface *text = image_load(read);
-	printf("%s", charRecognition_getText(charRecog, text));
+	printf("%s", charRecognition_getText(charRecog, text, dic));
 
 	return 1;
 }
@@ -89,6 +89,7 @@ void outputHelp()
 	printf(" Options:\n");
 	printf(" -m: Mode: [live|learn|learnNprocess|imageprocessing|block]\n");
 	printf(" -f: Path of the file that needs to be processed.\n");
+	printf(" -d: Path of the dictionary used to correct words. Can be empty.\n");
 	printf(" -w: Path of the directory containing the weights.\n");
 	printf(" -c: Path to the directory containing the letters used to learn.\n");
 	printf(" -s: String containing the chars in the file used to learn.\n");
@@ -105,6 +106,7 @@ int main(int argc, char *argv[])
 	int c;
     char *mode       = "";
     char *filePath   = "data/text/fullhard.bmp";
+	char *dictionaryPath = "data/words/french.txt";
 	unsigned passedFilePath = 1;
     char *charPath   = "data/letters/";
     char *weightsIn  = "data/weights/in.mediocr";
@@ -112,7 +114,7 @@ int main(int argc, char *argv[])
     char *charList   = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
 	int fontVariant  = 7;
 
-	while ((c = getopt(argc, argv, "m:f:wi:wo:c:s:v:h")) != -1) {
+	while ((c = getopt(argc, argv, "m:f:d:wi:wo:c:s:v:h")) != -1) {
 		switch (c) {
 		case 'm':
 			mode = optarg;
@@ -121,9 +123,13 @@ int main(int argc, char *argv[])
 			passedFilePath = 1;
 			filePath = optarg;
 			break;
+		case 'd':
+			dictionaryPath = optarg;
+			break;
 		case 'w':
 			weightsIn = string_concat(optarg, "/in.mediocr");
 			weightsOut = string_concat(optarg, "/out.mediocr");
+			break;
 		case 'c':
 			charPath = optarg;
 			break;
@@ -149,13 +155,13 @@ int main(int argc, char *argv[])
 		if (!testBlock(filePath))
 			err(1, "Error during the block detection.");
 	} else if(strcmp(mode, "learnNprocess") == 0) {
-		if (!startNeuralTest(charPath, charList, fontVariant, filePath))
+		if (!startNeuralTest(charPath, charList, fontVariant, filePath, dictionaryPath))
 			err(1, "Error during the testing of the neural network.");
 	} else if(strcmp(mode, "learn") == 0) {
 		if (!startLearning(charPath, charList, fontVariant, weightsIn, weightsOut))
 			err(1, "Error during the learn stage.");
 	} else if((strcmp(mode, "live") == 0 || strcmp(mode, "") == 0) && passedFilePath) {
-		if (!startLive(weightsIn, weightsOut, charList, filePath))
+		if (!startLive(weightsIn, weightsOut, charList, filePath, dictionaryPath))
 			err(1, "An error happened. Please make sure to use the latest version of MediOCR.");
 	} else {
 		outputHelp();

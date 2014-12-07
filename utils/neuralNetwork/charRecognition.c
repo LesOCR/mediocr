@@ -104,7 +104,8 @@ char charRecognition_getChar(struct charRecognition *charReg,
 	return bestChar;
 }
 
-char *charRecognition_getText(struct charRecognition *charReg, SDL_Surface *surface)
+char *charRecognition_getText(struct charRecognition *charReg, SDL_Surface *surface,
+ 	char *dic)
 {
 	char *recognized = "";
 
@@ -121,7 +122,7 @@ char *charRecognition_getText(struct charRecognition *charReg, SDL_Surface *surf
 				if(imageChar.space) {
 					if(strcmp(curWord, "") > 0)
 						recognized = string_concat(recognized,
-							wordCorrector_correct("data/words/english.txt", curWord));
+							wordCorrector_correct(dic, curWord));
 
 					curWord = "";
 
@@ -142,7 +143,7 @@ char *charRecognition_getText(struct charRecognition *charReg, SDL_Surface *surf
 
 			if(strcmp(curWord, "") > 0)
 				recognized = string_concat(recognized,
-					wordCorrector_correct("data/words/english.txt", curWord));
+					wordCorrector_correct(dic, curWord));
 
 			recognized = string_concat(recognized, "\n");
 		}

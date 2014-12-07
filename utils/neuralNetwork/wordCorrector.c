@@ -9,6 +9,9 @@
 
 char *wordCorrector_correct(char *pathWordlist, char *word)
 {
+	if(strcmp(pathWordlist, "") == 0 || strlen(word) < 3)
+		return word;
+
 	FILE * fp;
    	char * line = NULL;
    	size_t len = 0;
@@ -27,6 +30,9 @@ char *wordCorrector_correct(char *pathWordlist, char *word)
 		if(line[read - 1] == '\n')
 			line[read-- - 1] = '\0';
 
+		if(strlen(line) < 4)
+			continue;
+
 		int lv = wordCorrector_levenshtein(word, line);
 		if(lv < lvBest) {
 			lvBest = lv;
@@ -44,6 +50,9 @@ char *wordCorrector_correct(char *pathWordlist, char *word)
    	}
 
    	fclose(fp);
+
+	if(lvBest > 5)
+		return word;
 
 	return bestWord;
 }
