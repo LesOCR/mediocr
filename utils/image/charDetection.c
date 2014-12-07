@@ -105,38 +105,46 @@ unsigned charDetection_char(SDL_Surface *surface, struct ImageLine imageLine,
 	return 1;
 }
 
-
-ImageBlockArray charDetection_blocks(SDL_Surface *surface)
+ImageBlockArray charDetection_blocks(SDL_Surface *s)
 {
-	surface = filter_binary(surface, 128);
-	SDL_Surface *blurredSurface = filter_createGroup(surface);
-
 	ImageBlockArray blockArray = new_ImageBlockArray(1);
-	struct ImageBlock imageBlock;
 
-	for(unsigned x = 0; x < (unsigned)blurredSurface->w; x++)
+    s                          = filter_binary(s, 128);
+    SDL_Surface *binarySurface = filter_createGroup(s);
+
+	unsigned *map = calloc(s->w * s->h, sizeof(unsigned));
+	for(int y = 0; y < s->h; y++)
 	{
-		for(unsigned y = 0; y < (unsigned)blurredSurface->h; y++)
+		for(int x = 0; x < s->w; x++)
 		{
-			int topX = surface->w;
-			int topY = surface->h;
-			int bottomX = -1;
-			int bottomY = -1;
+			map[x + y * s->w] = image_getPixelBool(binarySurface, x, y);
+		}
+	}
 
-			charDetection_blockRec(blurredSurface, x, y, &topX, &topY,
-				&bottomX, &bottomY);
-
-			// The following ifs are wonderful hacks
-			if(topX != surface->w || topY != surface->h || bottomX != -1 || bottomY != -1)
+	for(int y = 0; y < s->h; y++)
+	{
+		for(int x = 0; x < s->w; x++)
+		{
+			if(map[x + y * s->w])
 			{
+				int topX = binarySurface->w;
+				int topY = binarySurface->h;
+				int bottomX = -1;
+				int bottomY = -1;
+
+				charDetection_blockRec(map, binarySurface->w, binarySurface->h,
+					x, y, &topX, &topY, &bottomX, &bottomY);
+
+				struct ImageBlock imageBlock;
 				imageBlock.startX = topX;
 				imageBlock.endX   = bottomX;
 				imageBlock.startY = topY;
 				imageBlock.endY   = bottomY;
-
 				imageBlock.lines = charDetection_go(
-					surface, topX, topY, bottomX, bottomY
+					s, topX, topY, bottomX, bottomY
 				);
+
+				printf("%d:%d - %d:%d\n", topX, topY, bottomX, bottomY);
 
 				push_ImageBlockArray(&blockArray, imageBlock);
 			}
@@ -146,30 +154,64 @@ ImageBlockArray charDetection_blocks(SDL_Surface *surface)
 	return blockArray;
 }
 
-void charDetection_blockRec(SDL_Surface *surface, int startX, int startY,
+void charDetection_blockRec(unsigned *map, int width, int height, int x, int y,
 	int *topX, int *topY, int *bottomX, int *bottomY)
 {
-	if(startX < 0 || startX > surface->w || startY < 0 || startY > surface->h ||
-		!image_getPixelBool(surface, startX, startY))
-		return;
+	int curSize = 4;
+	int curPosition = 3;
+	struct BlockStack *stack = malloc(curSize * sizeof(struct BlockStack));
+	stack[0] = (struct BlockStack){
+		.x = x + 1, .y = y
+	};
+	stack[1] = (struct BlockStack){
+		.x = x, .y = y + 1
+	};
+	stack[2] = (struct BlockStack){
+		.x = x - 1, .y = y
+	};
+	stack[3] = (struct BlockStack){
+		.x = x, .y = y - 1
+	};
+	while(curPosition >= 0)
+	{
+		struct BlockStack cur = stack[curPosition--];
 
-	image_putPixel(surface, startX, startY, SDL_MapRGBA(surface->format,
-		255, 255, 255, 0));
+		if(cur.x < 0 || cur.x >= width ||
+			cur.y < 0 || cur.y >= height ||
+			!map[cur.x + cur.y * width])
+			continue;
 
+		map[cur.x + cur.y * width] = 0;
 
-	if(startX < *topX)
-		*topX = startX;
-	if(startY < *topY)
-		*topY = startY;
-	if(startX > *bottomX)
-		*bottomX = startX;
-	if(startY > *bottomY)
-		*bottomY = startY;
+		if(cur.x < *topX)
+			*topX = x;
+		if(cur.y < *topY)
+			*topY = cur.y;
+		if(cur.x > *bottomX)
+			*bottomX = cur.x;
+		if(cur.y > *bottomY)
+			*bottomY = cur.y;
 
-	charDetection_blockRec(surface, startX + 1, startY, topX, topY, bottomX, bottomY);
-	charDetection_blockRec(surface, startX - 1, startY, topX, topY, bottomX, bottomY);
-	charDetection_blockRec(surface, startX    , startY + 1, topX, topY, bottomX, bottomY);
-	charDetection_blockRec(surface, startX    , startY - 1, topX, topY, bottomX, bottomY);
+		if(curSize <= curPosition + 4)
+		{
+			curSize += 4;
+			stack = realloc(stack, curSize * sizeof(struct BlockStack));
+		}
+
+		stack[++curPosition] = (struct BlockStack){
+			.x = cur.x + 1, .y = cur.y
+		};
+		stack[++curPosition] = (struct BlockStack){
+			.x = cur.x, .y = cur.y + 1
+		};
+		stack[++curPosition] = (struct BlockStack){
+			.x = cur.x - 1, .y = cur.y
+		};
+		stack[++curPosition] = (struct BlockStack){
+			.x = cur.x, .y = cur.y - 1
+		};
+	}
+	free(stack);
 }
 
 
@@ -186,12 +228,13 @@ ImageLineArray charDetection_go(SDL_Surface *surface, unsigned topX, unsigned to
 		struct ImageChar imageChar;
 		unsigned startX = topX;
 		unsigned start = 1;
-		unsigned spaceSize = 0;
+		unsigned spaceSizeSum = 0;
+		unsigned spaceCount = 0;
 
 		while (charDetection_char(surface, imageLine, &imageChar,
-					  startX, start, spaceSize) == 1) {
-			if(!spaceSize)
-				spaceSize = (imageChar.endX - startX) / 4;
+					  startX, start, (!start) ? (spaceSizeSum / spaceCount) / 2 : 0) == 1) {
+			spaceSizeSum += imageChar.endX - startX;
+			spaceCount++;
 			startX = imageChar.endX;
 			start = 0;
 			if(imageChar.space)

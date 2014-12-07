@@ -35,10 +35,17 @@ int startLearning(char *charsInput, char *characters)
 	return 1;
 }
 
+int testBlock(char *read)
+{
+	charDetection_blocks(image_load(read));
+
+	return 1;
+}
+
 int startNeuralTest(char *charsInput, char *characters, char *read)
 {
 	struct charRecognition *charRecog =
-	    charRecognition_learn(charsInput, characters, strlen(characters), 5);
+	    charRecognition_learn(charsInput, characters, strlen(characters), 7);
 
 	SDL_Surface *text = image_load(read);
 	ImageBlockArray imageBlock = charDetection_blocks(text);
@@ -62,11 +69,9 @@ int startNeuralTest(char *charsInput, char *characters, char *read)
 						text, &imageChar),
 					16, 16);
 
-				image_display(filter_binary(s, 128));
-
 				imageChar.content = charRecognition_getChar(charRecog, s);
 
-				printf("%c", charRecognition_getChar(charRecog, s));
+				printf("%c", tolower(charRecognition_getChar(charRecog, s)));
 			}
 		}
 	}
@@ -126,7 +131,7 @@ void outputHelp()
 	       "Cyril CHEMLA\n");
 	printf(" Version: 0.2.0.0\n\n");
 	printf(" Options:\n");
-	printf(" -m: Mode: [live|learn|learnNprocess|imageprocessing]\n");
+	printf(" -m: Mode: [live|learn|learnNprocess|imageprocessing|block]\n");
 	printf(" -f: Path of the file that needs to be processed.\n");
 	printf(" -w: Path of the directory containing the weights.\n");
 	printf(" -c: Path to the directory containing the letters used to learn.\n");
@@ -142,7 +147,7 @@ int main(int argc, char *argv[])
 {
 	int c;
     char *mode       = "";
-    char *filePath   = "data/text/part.bmp";
+    char *filePath   = "data/text/fullhard.bmp";
     char *charPath   = "data/letters/";
     char *weightsIn  = "data/weights/in.mediocr";
     char *weightsOut = "data/weights/out.mediocr";
@@ -177,6 +182,9 @@ int main(int argc, char *argv[])
 	if (strcmp(mode, "imageprocessing") == 0) {
 		if (!startImageProcessing(filePath))
 			err(1, "Error during the image processing.");
+	} else if(strcmp(mode, "block") == 0) {
+		if (!testBlock(filePath))
+			err(1, "Error during the block detection.");
 	} else if(strcmp(mode, "learnNprocess") == 0) {
 		if (!startNeuralTest(charPath, charList, filePath))
 			err(1, "Error during the testing of the neural network.");

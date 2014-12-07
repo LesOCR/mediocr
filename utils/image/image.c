@@ -73,7 +73,7 @@ SDL_Surface *image_load(char *path)
 	assert(file_exists(path));
 
 	SDL_Surface *s = SDL_LoadBMP(path);
-	float maxSize = 800;
+	float maxSize = 2000;
 
 	if(s->w > maxSize || s->h > maxSize)
 	{
