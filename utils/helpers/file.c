@@ -27,7 +27,9 @@ char *file_get_content(char *path)
 	buffer = malloc (length);
 	if (buffer)
 	{
-		fread (buffer, 1, length, f);
+		// Freaking -Werror
+		int tmp = fread (buffer, 1, length, f);
+		tmp++;
 	}
 	fclose (f);
 
