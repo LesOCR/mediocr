@@ -11,8 +11,6 @@
 
 struct NeuralNetwork *neuralNetwork_main(unsigned ni, unsigned nh, unsigned no)
 {
-	printf("Neural network started! \n");
-
 	// Initialize our structure
 	struct NeuralNetwork *myNeuralNetwork =
 	    malloc(sizeof(struct NeuralNetwork));
@@ -265,32 +263,38 @@ void NeuralNetwork_loadWeightOutput(struct NeuralNetwork *neuralNetwork,
 
 char *NeuralNetwork_serializeWeightsInput(struct NeuralNetwork *neuralNetwork)
 {
-	char *serialized = "";
+	unsigned stringLength = 0;
+	char *serialized = malloc((stringLength + 1) * sizeof(char));
 
 	for (unsigned i = 0; i < neuralNetwork->numberInput; i++)
 		for (unsigned j = 0; j < neuralNetwork->numberHidden; j++) {
-			char s[10];
+			char s[20];
 			sprintf(
 			    s, "%.6f",
 			    neuralNetwork->weightInput.elements[i].elements[j]);
-			serialized = string_concat(serialized, s);
-			serialized = string_concat(serialized, ";");
+			stringLength += 20;
+			serialized = realloc(serialized, (stringLength + 1) * sizeof(char));
+			strcat(serialized, s);
+			strcat(serialized, ";");
 		}
 
 	return serialized;
 }
 char *NeuralNetwork_serializeWeightsOutput(struct NeuralNetwork *neuralNetwork)
 {
-	char *serialized = "";
+	unsigned stringLength = 0;
+	char *serialized = malloc((stringLength + 1) * sizeof(char));
 
 	for (unsigned j = 0; j < neuralNetwork->numberHidden; j++)
 		for (unsigned k = 0; k < neuralNetwork->numberOutput; k++) {
-			char s[10];
+			char s[20];
 			sprintf(s, "%.6f",
 				neuralNetwork->weightOutput.elements[j]
 				    .elements[k]);
-			serialized = string_concat(serialized, s);
-			serialized = string_concat(serialized, ";");
+			stringLength += 20;
+			serialized = realloc(serialized, (stringLength + 1) * sizeof(char));
+			strcat(serialized, s);
+			strcat(serialized, ";");
 		}
 
 	return serialized;

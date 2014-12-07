@@ -20,7 +20,7 @@ struct charRecognitionList {
 struct charRecognition *charRecognition_learn(char *rootPath,
 	char chars[], size_t size, size_t variants);
 struct charRecognition *charRecognition_learnWeights(char *pathIn, char *pathOut,
-	size_t size);
+	char chars[], size_t size);
 char charRecognition_getChar(struct charRecognition *list,
 			     SDL_Surface *surface);
 char *charRecognition_getText(struct charRecognition *charReg, SDL_Surface *surface);

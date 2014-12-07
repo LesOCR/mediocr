@@ -8,6 +8,8 @@
 #include "../image/image.h"
 #include "charRecognition.h"
 
+#define HIDDEN_LAYER_COUNT 450
+
 struct charRecognition *charRecognition_learn(char *rootPath,
 						  char chars[], size_t size, size_t variants)
 {
@@ -15,7 +17,7 @@ struct charRecognition *charRecognition_learn(char *rootPath,
 		malloc(sizeof(struct charRecognition));
 
 	struct NeuralNetwork *myNeuralNetwork =
-		neuralNetwork_main(256, 450, size);
+		neuralNetwork_main(256, HIDDEN_LAYER_COUNT, size);
 
 	unsignedArray2D input = new_unsignedArray2D(size * variants, 256);
 	unsignedArray2D output = new_unsignedArray2D(size * variants, size);
@@ -57,16 +59,20 @@ struct charRecognition *charRecognition_learn(char *rootPath,
 }
 
 struct charRecognition *charRecognition_learnWeights(char *pathIn, char *pathOut,
-	size_t size)
+	char chars[], size_t size)
 {
 	struct charRecognition *charReg =
 		malloc(sizeof(struct charRecognition));
 
 	struct NeuralNetwork *myNeuralNetwork =
-		neuralNetwork_main(256, 6, size);
+		neuralNetwork_main(256, HIDDEN_LAYER_COUNT, size);
 
 	NeuralNetwork_loadWeightInput(myNeuralNetwork, file_get_content(pathIn));
 	NeuralNetwork_loadWeightOutput(myNeuralNetwork, file_get_content(pathOut));
+
+	charReg->letters = chars;
+	charReg->size    = size;
+	charReg->network = myNeuralNetwork;
 
 	return charReg;
 }

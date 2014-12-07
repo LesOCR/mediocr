@@ -144,8 +144,6 @@ ImageBlockArray charDetection_blocks(SDL_Surface *s)
 					s, topX, topY, bottomX, bottomY
 				);
 
-				printf("%d:%d - %d:%d\n", topX, topY, bottomX, bottomY);
-
 				push_ImageBlockArray(&blockArray, imageBlock);
 			}
 		}
@@ -232,7 +230,7 @@ ImageLineArray charDetection_go(SDL_Surface *surface, unsigned topX, unsigned to
 		unsigned spaceCount = 0;
 
 		while (charDetection_char(surface, imageLine, &imageChar,
-					  startX, start, (!start) ? (spaceSizeSum / spaceCount) / 2 : 0) == 1) {
+					  startX, start, (!start) ? (spaceSizeSum / spaceCount) / 1.5 : 0) == 1) {
 			spaceSizeSum += imageChar.endX - startX;
 			spaceCount++;
 			startX = imageChar.endX;

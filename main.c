@@ -30,9 +30,9 @@ int startLearning(char *charsInput, char *characters, int variant, char *pathIn,
 	struct charRecognition *charRecog =
 	    charRecognition_learn(charsInput, characters, strlen(characters), variant);
 
-	printf("Serializing weights...\n");
-
+	printf("Serializing input weights...\n");
 	char *weightsInput = NeuralNetwork_serializeWeightsInput(charRecog->network);
+	printf("Serializing output weights...\n");
 	char *weightsOutput = NeuralNetwork_serializeWeightsOutput(charRecog->network);
 
 	printf("Storing...\n");
@@ -61,12 +61,12 @@ int startNeuralTest(char *charsInput, char *characters, int variant, char *read)
 	return 1;
 }
 
-int startLive(char *pathIn, char *pathOut, size_t size, char *read)
+int startLive(char *pathIn, char *pathOut, char *characters, char *read)
 {
-	struct charRecognition *charRecog = charRecognition_learnWeights(pathIn, pathOut, size);
-
+	struct charRecognition *charRecog = charRecognition_learnWeights(pathIn,
+		pathOut, characters, strlen(characters));
 	SDL_Surface *text = image_load(read);
-	printf("Recognized text: \n%s", charRecognition_getText(charRecog, text));
+	printf("%s", charRecognition_getText(charRecog, text));
 
 	return 1;
 }
@@ -107,8 +107,8 @@ int main(int argc, char *argv[])
 {
 	int c;
     char *mode       = "";
-    char *filePath   = "data/text/elise.bmp";
-	unsigned passedFilePath = 0;
+    char *filePath   = "data/text/fullhard.bmp";
+	unsigned passedFilePath = 1;
     char *charPath   = "data/letters/";
     char *weightsIn  = "data/weights/in.mediocr";
     char *weightsOut = "data/weights/out.mediocr";
@@ -158,7 +158,7 @@ int main(int argc, char *argv[])
 		if (!startLearning(charPath, charList, fontVariant, weightsIn, weightsOut))
 			err(1, "Error during the learn stage.");
 	} else if((strcmp(mode, "live") == 0 || strcmp(mode, "") == 0) && passedFilePath) {
-		if (!startLive(weightsIn, weightsOut, strlen(charList), filePath))
+		if (!startLive(weightsIn, weightsOut, charList, filePath))
 			err(1, "An error happened. Please make sure to use the latest version of MediOCR.");
 	} else {
 		outputHelp();
