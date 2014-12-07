@@ -23,7 +23,7 @@ char *wordCorrector_correct(char *pathWordlist, char *word)
 	char *bestWord = malloc((bestWordLength + 1) * sizeof(char));
 	strcpy(bestWord, word);
 
-   	while ((read = getline(&line, &len, fp)) != -1) {
+   	while ((read = getline_perso(&line, &len, fp)) != -1) {
 		if(line[read - 1] == '\n')
 			line[read-- - 1] = '\0';
 
