@@ -3,9 +3,10 @@
 
 #include "../helpers/strings.h"
 #include "../helpers/file.h"
-#include "neuralNetwork.h"
 #include "../types/arrays.h"
 #include "../image/image.h"
+#include "neuralNetwork.h"
+#include "wordCorrector.h"
 #include "charRecognition.h"
 
 #define HIDDEN_LAYER_COUNT 450
@@ -111,11 +112,19 @@ char *charRecognition_getText(struct charRecognition *charReg, SDL_Surface *surf
 	for(unsigned h = 0; h < imageBlock.size; h++) {
 		ImageLineArray imageLine = imageBlock.elements[h].lines;
 		for (unsigned i = 0; i < imageLine.size; i++) {
+			char *curWord = "";
+
 			for (unsigned j = 0; j < imageLine.elements[i].chars.size;
 				j++) {
 				struct ImageChar imageChar = imageLine.elements[i].chars.elements[j];
 
 				if(imageChar.space) {
+					if(strcmp(curWord, "") > 0)
+						recognized = string_concat(recognized,
+							wordCorrector_correct("data/words/english.txt", curWord));
+
+					curWord = "";
+
 					recognized = string_concat(recognized, " ");
 					continue;
 				}
@@ -127,8 +136,13 @@ char *charRecognition_getText(struct charRecognition *charReg, SDL_Surface *surf
 
 				imageChar.content = charRecognition_getChar(charReg, s);
 
-				recognized = string_concatChar(recognized, tolower(charRecognition_getChar(charReg, s)));
+				curWord = string_concatChar(curWord,
+					tolower(charRecognition_getChar(charReg, s)));
 			}
+
+			if(strcmp(curWord, "") > 0)
+				recognized = string_concat(recognized,
+					wordCorrector_correct("data/words/english.txt", curWord));
 
 			recognized = string_concat(recognized, "\n");
 		}

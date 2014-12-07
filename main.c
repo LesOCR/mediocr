@@ -10,12 +10,9 @@
 #include "utils/helpers/file.h"
 #include "utils/neuralNetwork/neuralNetwork.h"
 #include "utils/neuralNetwork/charRecognition.h"
-#include "utils/types/arrays.h"
 #include "utils/image/image.h"
-#include "utils/image/convolution.h"
 #include "utils/image/filters.h"
 #include "utils/image/charDetection.h"
-#include "utils/types/structArrays.h"
 
 int setup()
 {

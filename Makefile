@@ -18,7 +18,7 @@ LDFLAGS=
 # Linker libs
 LDLIBS= -lm `sdl-config --cflags --libs`
 
-SRC= main.c utils/neuralNetwork/neuralNetwork.c utils/neuralNetwork/charRecognition.c utils/helpers/maths.c utils/helpers/file.c utils/helpers/strings.c utils/types/arrays.c utils/types/structArrays.c  utils/image/image.c utils/image/charDetection.c utils/image/convolution.c utils/image/filters.c
+SRC= main.c utils/neuralNetwork/neuralNetwork.c utils/neuralNetwork/charRecognition.c utils/neuralNetwork/wordCorrector.c utils/helpers/maths.c utils/helpers/file.c utils/helpers/strings.c utils/types/arrays.c utils/types/structArrays.c  utils/image/image.c utils/image/charDetection.c utils/image/convolution.c utils/image/filters.c
 OBJ= ${SRC:.c=.o}
 
 # all target just call the production of main
