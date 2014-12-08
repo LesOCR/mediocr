@@ -113,7 +113,7 @@ int main(int argc, char *argv[])
 	int c;
 	char *mode = "";
 	char *filePath = "data/text/fullhard.bmp";
-	char *dictionaryPath = "data/words/french.txt";
+	char *dictionaryPath = "data/words/english.txt";
 	unsigned passedFilePath = 1;
 	char *charPath = "data/letters/";
 	char *weightsIn = "data/weights/in.mediocr";
