@@ -164,10 +164,10 @@ double NeuralNetwork_backPropagate(struct NeuralNetwork *neuralNetwork,
 	// Calculate error
 	double error = 0;
 	for (unsigned k = 0; k < neuralNetwork->numberOutput; k++)
-		error +=
-		    (1.0 / neuralNetwork->numberInput) * pow(targets.elements[k] -
-				  neuralNetwork->activationOutput.elements[k],
-			      2);
+		error += (1.0 / neuralNetwork->numberInput) *
+			 pow(targets.elements[k] -
+				 neuralNetwork->activationOutput.elements[k],
+			     2);
 
 	return error;
 }
@@ -189,8 +189,7 @@ void NeuralNetwork_train(struct NeuralNetwork *neuralNetwork,
 			    momentumFactor);
 		}
 
-		if(!(++step % 100))
-		{
+		if (!(++step % 100)) {
 			printf("Error ratio: %g\n", error);
 			step = 0;
 		}
@@ -273,7 +272,8 @@ char *NeuralNetwork_serializeWeightsInput(struct NeuralNetwork *neuralNetwork)
 			    s, "%.6f",
 			    neuralNetwork->weightInput.elements[i].elements[j]);
 			stringLength += 20;
-			serialized = realloc(serialized, (stringLength + 1) * sizeof(char));
+			serialized = realloc(serialized,
+					     (stringLength + 1) * sizeof(char));
 			strcat(serialized, s);
 			strcat(serialized, ";");
 		}
@@ -292,7 +292,8 @@ char *NeuralNetwork_serializeWeightsOutput(struct NeuralNetwork *neuralNetwork)
 				neuralNetwork->weightOutput.elements[j]
 				    .elements[k]);
 			stringLength += 20;
-			serialized = realloc(serialized, (stringLength + 1) * sizeof(char));
+			serialized = realloc(serialized,
+					     (stringLength + 1) * sizeof(char));
 			strcat(serialized, s);
 			strcat(serialized, ";");
 		}

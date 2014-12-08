@@ -16,22 +16,20 @@ char *file_get_content(char *path)
 	long length;
 	FILE *f = fopen(path, "rb");
 
-	if (!f)
-	{
-	  	err(1, "The file could not be found [%s].", path);
+	if (!f) {
+		err(1, "The file could not be found [%s].", path);
 	}
 
-	fseek (f, 0, SEEK_END);
-	length = ftell (f);
-	fseek (f, 0, SEEK_SET);
-	buffer = malloc (length);
-	if (buffer)
-	{
+	fseek(f, 0, SEEK_END);
+	length = ftell(f);
+	fseek(f, 0, SEEK_SET);
+	buffer = malloc(length);
+	if (buffer) {
 		// Freaking -Werror
-		int tmp = fread (buffer, 1, length, f);
+		int tmp = fread(buffer, 1, length, f);
 		tmp++;
 	}
-	fclose (f);
+	fclose(f);
 
 	return buffer;
 }
@@ -39,10 +37,9 @@ char *file_get_content(char *path)
 void file_put_content(char *path, char *content)
 {
 	FILE *f = fopen(path, "w");
-	if (f == NULL)
-	{
-	    err(1, "The file could not be opened.");
-	    exit(1);
+	if (f == NULL) {
+		err(1, "The file could not be opened.");
+		exit(1);
 	}
 
 	fprintf(f, "%s", content);
