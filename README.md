@@ -1,13 +1,13 @@
 # MediOCR
 
-MediOCR is a next generation, high performances OCR made by EPITA students.
+MediOCR a high performances OCR made by EPITA students.
 
 ## Installation
 
 ### Git
 
 ```
-# git clone https://github.com/lesocr/mediocr.git
+# git clone https://github.com/mandor53/mediocr.git
 # make
 ```
 
@@ -15,10 +15,10 @@ MediOCR is a next generation, high performances OCR made by EPITA students.
 
 ### Overview
 
-As of now, MediOCR is a very simple, but yet flexible, Neural Network able to perform XOR operations.
+As of now, MediOCR is able to recognize a text in an image which has some noise in it. It is also able to correct words using a dictionary.
 
 ### Execution
 
 ```
-# ./main
+# ./main -f path/to/file.bmp
 ```
