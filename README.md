@@ -1,6 +1,6 @@
 # MediOCR
 
-MediOCR a high performances OCR made by EPITA students.
+MediOCR a high performances OCR made during EPITA.
 
 ## Installation
 

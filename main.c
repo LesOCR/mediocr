@@ -83,8 +83,7 @@ void outputHelp()
 {
 	printf("----------------------------- MediOCR "
 	       "----------------------------------\n");
-	printf(" Authors: Manuel HUEZ, Louis-Paul DAREAU, Erenus DERMANCI, "
-	       "Cyril CHEMLA\n");
+	printf(" Authors: Manuel HUEZ\n");
 	printf(" Version: 0.2.0.0\n\n");
 	printf(" Options:\n");
 	printf(" -m: Mode: [live|learn|learnNprocess|imageprocessing|block]\n");
