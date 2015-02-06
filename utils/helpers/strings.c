@@ -16,7 +16,7 @@ char *string_concatChar(char *s1, char s2)
 {
 	char *result = malloc((strlen(s1) + 2) * sizeof(char));
 	strcpy(result, s1);
-	char *s22 = (char[2]) { (char) s2, '\0' };
+	char *s22 = (char[2]){(char)s2, '\0'};
 	strcat(result, s22);
 	return result;
 }

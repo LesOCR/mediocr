@@ -24,17 +24,18 @@ void push_ImageBlockArray(ImageBlockArray *array, struct ImageBlock imageBlock)
 }
 
 void add_ImageBlockArray(ImageBlockArray *array, unsigned i,
-	struct ImageBlock imageBlock)
+			 struct ImageBlock imageBlock)
 {
 	if (i >= array->capacity) {
 		// Reallocate some memory
 		while (i >= array->capacity)
 			array->capacity <<= 1;
 		array->elements =
-		realloc(array->elements,
-			array->capacity * sizeof(struct ImageLine));
+		    realloc(array->elements,
+			    array->capacity * sizeof(struct ImageLine));
 		if (array->elements == NULL)
-			errx(1, "ImageLineArray: Could not reallocate memory\n");
+			errx(1,
+			     "ImageLineArray: Could not reallocate memory\n");
 	}
 
 	array->elements[i] = imageBlock;
@@ -72,7 +73,8 @@ void add_ImageLineArray(ImageLineArray *array, unsigned i,
 		    realloc(array->elements,
 			    array->capacity * sizeof(struct ImageLine));
 		if (array->elements == NULL)
-			errx(1, "ImageLineArray: Could not reallocate memory\n");
+			errx(1,
+			     "ImageLineArray: Could not reallocate memory\n");
 	}
 
 	array->elements[i] = imageLine;
@@ -108,7 +110,8 @@ void add_ImageCharArray(ImageCharArray *array, unsigned i,
 		    realloc(array->elements,
 			    array->capacity * sizeof(struct ImageChar));
 		if (array->elements == NULL)
-			errx(1, "ImageCharArray: Could not reallocate memory\n");
+			errx(1,
+			     "ImageCharArray: Could not reallocate memory\n");
 	}
 
 	array->elements[i] = imageChar;

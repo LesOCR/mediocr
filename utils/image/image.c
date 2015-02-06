@@ -7,35 +7,39 @@
 #include "charDetection.h"
 #include "../helpers/file.h"
 
-void wait_for_keypressed(void) {
-	SDL_Event             event;
+void wait_for_keypressed(void)
+{
+	SDL_Event event;
 	// Infinite loop, waiting for event
 	for (;;) {
 		// Take an event
-		SDL_PollEvent( &event );
+		SDL_PollEvent(&event);
 		// Switch on event type
 		switch (event.type) {
-			// Someone pressed a key -> leave the function
-			case SDL_KEYDOWN: return;
-			default: break;
+		// Someone pressed a key -> leave the function
+		case SDL_KEYDOWN:
+			return;
+		default:
+			break;
 		}
 		// Loop until we got the expected event
 	}
 }
 
-SDL_Surface* image_display(SDL_Surface *img)
+SDL_Surface *image_display(SDL_Surface *img)
 {
-	SDL_Surface          *screen;
+	SDL_Surface *screen;
 	// Set the window to the same size as the image
-	screen = SDL_SetVideoMode(img->w, img->h, 0, SDL_SWSURFACE|SDL_ANYFORMAT);
-	if ( screen == NULL ) {
+	screen =
+	    SDL_SetVideoMode(img->w, img->h, 0, SDL_SWSURFACE | SDL_ANYFORMAT);
+	if (screen == NULL) {
 		// error management
-		errx(1, "Couldn't set %dx%d video mode: %s\n",
-		img->w, img->h, SDL_GetError());
+		errx(1, "Couldn't set %dx%d video mode: %s\n", img->w, img->h,
+		     SDL_GetError());
 	}
 
 	/* Blit onto the screen surface */
-	if(SDL_BlitSurface(img, NULL, screen, NULL) < 0)
+	if (SDL_BlitSurface(img, NULL, screen, NULL) < 0)
 		warnx("BlitSurface error: %s\n", SDL_GetError());
 
 	// Update the screen
@@ -53,11 +57,11 @@ SDL_Surface *image_copy(SDL_Surface *surf)
 	SDL_Surface *res;
 
 	res = SDL_CreateRGBSurface(surf->flags, surf->w, surf->h,
-		surf->format->BitsPerPixel, surf->format->Rmask,
-		surf->format->Gmask, surf->format->Bmask,
-		surf->format->Amask);
+				   surf->format->BitsPerPixel,
+				   surf->format->Rmask, surf->format->Gmask,
+				   surf->format->Bmask, surf->format->Amask);
 
-	if(res != NULL) {
+	if (res != NULL) {
 		SDL_BlitSurface(surf, NULL, res, NULL);
 	}
 
@@ -75,10 +79,8 @@ SDL_Surface *image_load(char *path)
 	SDL_Surface *s = SDL_LoadBMP(path);
 	float maxSize = 2000;
 
-	if(s->w > maxSize || s->h > maxSize)
-	{
-		if(s->w > s->h)
-		{
+	if (s->w > maxSize || s->h > maxSize) {
+		if (s->w > s->h) {
 			return image_scale(s, maxSize, s->h * (maxSize / s->w));
 		}
 
@@ -165,11 +167,9 @@ unsigned _image_cropTop(SDL_Surface *surface)
 {
 	unsigned top = 0;
 
-	for(unsigned y = 0; y < (unsigned)surface->h; y++)
-	{
-		for(unsigned x = 0; x < (unsigned)surface->w; x++)
-		{
-			if(image_getPixelBool(surface, x, y))
+	for (unsigned y = 0; y < (unsigned)surface->h; y++) {
+		for (unsigned x = 0; x < (unsigned)surface->w; x++) {
+			if (image_getPixelBool(surface, x, y))
 				return top;
 		}
 
@@ -182,12 +182,9 @@ unsigned _image_cropBottom(SDL_Surface *surface)
 {
 	unsigned bottom = surface->h - 1;
 
-	for(unsigned y = surface->h - 1; y > 0; y--)
-	{
-		for(unsigned x = 0; x < (unsigned)surface->w; x++)
-		{
-			if(image_getPixelBool(surface, x, y))
-			{
+	for (unsigned y = surface->h - 1; y > 0; y--) {
+		for (unsigned x = 0; x < (unsigned)surface->w; x++) {
+			if (image_getPixelBool(surface, x, y)) {
 				return bottom;
 			}
 		}
@@ -201,11 +198,9 @@ unsigned _image_cropLeft(SDL_Surface *surface)
 {
 	unsigned left = 0;
 
-	for(unsigned x = 0; x < (unsigned)surface->w; x++)
-	{
-		for(unsigned y = 0; y < (unsigned)surface->h; y++)
-		{
-			if(image_getPixelBool(surface, x, y))
+	for (unsigned x = 0; x < (unsigned)surface->w; x++) {
+		for (unsigned y = 0; y < (unsigned)surface->h; y++) {
+			if (image_getPixelBool(surface, x, y))
 				return left;
 		}
 
@@ -218,12 +213,9 @@ unsigned _image_cropRight(SDL_Surface *surface)
 {
 	unsigned right = surface->w - 1;
 
-	for(unsigned x = surface->w - 1; x > 0; x--)
-	{
-		for(unsigned y = 0; y < (unsigned)surface->h; y++)
-		{
-			if(image_getPixelBool(surface, x, y))
-			{
+	for (unsigned x = surface->w - 1; x > 0; x--) {
+		for (unsigned y = 0; y < (unsigned)surface->h; y++) {
+			if (image_getPixelBool(surface, x, y)) {
 				return right;
 			}
 		}
@@ -278,18 +270,18 @@ static inline Uint8 *pixelref(SDL_Surface *surf, unsigned x, unsigned y)
 Uint32 image_getPixelUint32(SDL_Surface *surface, unsigned x, unsigned y)
 {
 	Uint8 *p = pixelref(surface, x, y);
-	switch(surface->format->BytesPerPixel) {
-		case 1:
+	switch (surface->format->BytesPerPixel) {
+	case 1:
 		return *p;
-		case 2:
+	case 2:
 		return *(Uint16 *)p;
-		case 3:
-		if(SDL_BYTEORDER == SDL_BIG_ENDIAN)
+	case 3:
+		if (SDL_BYTEORDER == SDL_BIG_ENDIAN)
 			return p[0] << 16 | p[1] << 8 | p[2];
 		else
 			return p[0] | p[1] << 8 | p[2] << 16;
-		case 4:
-			return *(Uint32 *)p;
+	case 4:
+		return *(Uint32 *)p;
 	}
 	return 0;
 }

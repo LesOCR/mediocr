@@ -21,9 +21,9 @@ double maths_dsigmoid(double y)
 
 int maths_between(int in, Uint16 l, Uint16 r)
 {
-	if(in > r)
+	if (in > r)
 		in = r;
-	if(in < l)
+	if (in < l)
 		in = l;
 
 	return in;

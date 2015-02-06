@@ -21,16 +21,18 @@ int setup()
 	return 1;
 }
 
-
-int startLearning(char *charsInput, char *characters, int variant, char *pathIn, char *pathOut)
+int startLearning(char *charsInput, char *characters, int variant, char *pathIn,
+		  char *pathOut)
 {
-	struct charRecognition *charRecog =
-	    charRecognition_learn(charsInput, characters, strlen(characters), variant);
+	struct charRecognition *charRecog = charRecognition_learn(
+	    charsInput, characters, strlen(characters), variant);
 
 	printf("Serializing input weights...\n");
-	char *weightsInput = NeuralNetwork_serializeWeightsInput(charRecog->network);
+	char *weightsInput =
+	    NeuralNetwork_serializeWeightsInput(charRecog->network);
 	printf("Serializing output weights...\n");
-	char *weightsOutput = NeuralNetwork_serializeWeightsOutput(charRecog->network);
+	char *weightsOutput =
+	    NeuralNetwork_serializeWeightsOutput(charRecog->network);
 
 	printf("Storing...\n");
 
@@ -47,21 +49,24 @@ int testBlock(char *read)
 	return 1;
 }
 
-int startNeuralTest(char *charsInput, char *characters, int variant, char *read, char *dic)
+int startNeuralTest(char *charsInput, char *characters, int variant, char *read,
+		    char *dic)
 {
-	struct charRecognition *charRecog =
-	    charRecognition_learn(charsInput, characters, strlen(characters), variant);
+	struct charRecognition *charRecog = charRecognition_learn(
+	    charsInput, characters, strlen(characters), variant);
 
 	SDL_Surface *text = image_load(read);
-	printf("Recognized text: \n%s", charRecognition_getText(charRecog, text, dic));
+	printf("Recognized text: \n%s",
+	       charRecognition_getText(charRecog, text, dic));
 
 	return 1;
 }
 
-int startLive(char *pathIn, char *pathOut, char *characters, char *read, char *dic)
+int startLive(char *pathIn, char *pathOut, char *characters, char *read,
+	      char *dic)
 {
-	struct charRecognition *charRecog = charRecognition_learnWeights(pathIn,
-		pathOut, characters, strlen(characters));
+	struct charRecognition *charRecog = charRecognition_learnWeights(
+	    pathIn, pathOut, characters, strlen(characters));
 	SDL_Surface *text = image_load(read);
 	printf("%s", charRecognition_getText(charRecog, text, dic));
 
@@ -88,9 +93,11 @@ void outputHelp()
 	printf(" Options:\n");
 	printf(" -m: Mode: [live|learn|learnNprocess|imageprocessing|block]\n");
 	printf(" -f: Path of the file that needs to be processed.\n");
-	printf(" -d: Path of the dictionary used to correct words. Can be empty.\n");
+	printf(" -d: Path of the dictionary used to correct words. Can be "
+	       "empty.\n");
 	printf(" -w: Path of the directory containing the weights.\n");
-	printf(" -c: Path to the directory containing the letters used to learn.\n");
+	printf(" -c: Path to the directory containing the letters used to "
+	       "learn.\n");
 	printf(" -s: String containing the chars in the file used to learn.\n");
 	printf(" -v: Number of fonts variants to be learned.\n");
 	printf(" -h: Show this wonderful help.\n");
@@ -103,15 +110,16 @@ void outputHelp()
 int main(int argc, char *argv[])
 {
 	int c;
-    char *mode       = "";
-    char *filePath   = "data/text/fullhard.bmp";
-	char *dictionaryPath = "data/words/french.txt";
+	char *mode = "";
+	char *filePath = "data/text/fullhard.bmp";
+	char *dictionaryPath = "data/words/english.txt";
 	unsigned passedFilePath = 1;
-    char *charPath   = "data/letters/";
-    char *weightsIn  = "data/weights/in.mediocr";
-    char *weightsOut = "data/weights/out.mediocr";
-    char *charList   = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-	int fontVariant  = 7;
+	char *charPath = "data/letters/";
+	char *weightsIn = "data/weights/in.mediocr";
+	char *weightsOut = "data/weights/out.mediocr";
+	char *charList =
+	    "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+	int fontVariant = 7;
 
 	while ((c = getopt(argc, argv, "m:f:d:wi:wo:c:s:v:h")) != -1) {
 		switch (c) {
@@ -150,18 +158,24 @@ int main(int argc, char *argv[])
 	if (strcmp(mode, "imageprocessing") == 0) {
 		if (!startImageProcessing(filePath))
 			err(1, "Error during the image processing.");
-	} else if(strcmp(mode, "block") == 0) {
+	} else if (strcmp(mode, "block") == 0) {
 		if (!testBlock(filePath))
 			err(1, "Error during the block detection.");
-	} else if(strcmp(mode, "learnNprocess") == 0) {
-		if (!startNeuralTest(charPath, charList, fontVariant, filePath, dictionaryPath))
-			err(1, "Error during the testing of the neural network.");
-	} else if(strcmp(mode, "learn") == 0) {
-		if (!startLearning(charPath, charList, fontVariant, weightsIn, weightsOut))
+	} else if (strcmp(mode, "learnNprocess") == 0) {
+		if (!startNeuralTest(charPath, charList, fontVariant, filePath,
+				     dictionaryPath))
+			err(1,
+			    "Error during the testing of the neural network.");
+	} else if (strcmp(mode, "learn") == 0) {
+		if (!startLearning(charPath, charList, fontVariant, weightsIn,
+				   weightsOut))
 			err(1, "Error during the learn stage.");
-	} else if((strcmp(mode, "live") == 0 || strcmp(mode, "") == 0) && passedFilePath) {
-		if (!startLive(weightsIn, weightsOut, charList, filePath, dictionaryPath))
-			err(1, "An error happened. Please make sure to use the latest version of MediOCR.");
+	} else if ((strcmp(mode, "live") == 0 || strcmp(mode, "") == 0) &&
+		   passedFilePath) {
+		if (!startLive(weightsIn, weightsOut, charList, filePath,
+			       dictionaryPath))
+			err(1, "An error happened. Please make sure to use the "
+			       "latest version of MediOCR.");
 	} else {
 		outputHelp();
 	}
